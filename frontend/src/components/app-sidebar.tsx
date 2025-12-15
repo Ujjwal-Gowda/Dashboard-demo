@@ -23,10 +23,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Separator } from "../components/ui/separator";
 
 const mainItems = [
-  { title: "Home", url: "#", icon: Home },
-  { title: "Inbox", url: "#", icon: Inbox },
-  { title: "Calendar", url: "#", icon: Calendar },
-  { title: "Search", url: "#", icon: Search },
+  { title: "Home", url: "/", icon: Home },
+  { title: "Inbox", url: "inbox", icon: Inbox },
+  { title: "Calendar", url: "calender", icon: Calendar },
+  { title: "Search", url: "search", icon: Search },
 ];
 
 export function AppSidebar() {

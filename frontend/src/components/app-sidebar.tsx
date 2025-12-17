@@ -36,7 +36,7 @@ export function AppSidebar() {
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-3">
           <Avatar className="!h-9 !w-9">
-            <AvatarImage src="https://github.com/shadcn.png" alt="profile" />
+            <AvatarImage src="" alt="profile" />
             <AvatarFallback>UG</AvatarFallback>
           </Avatar>
           <div className="flex min-w-0 flex-col">

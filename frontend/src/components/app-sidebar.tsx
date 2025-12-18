@@ -21,15 +21,16 @@ import {
 } from "./ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Separator } from "../components/ui/separator";
-
+import { useNavigate } from "react-router-dom";
 const mainItems = [
-  { title: "Home", url: "/", icon: Home },
-  { title: "Inbox", url: "inbox", icon: Inbox },
-  { title: "Calendar", url: "calender", icon: Calendar },
-  { title: "Search", url: "search", icon: Search },
+  { title: "Home", url: "home", icon: Home },
+  { title: "Market", url: "market", icon: Inbox },
+  { title: "Deep Dive", url: "deepdive", icon: Calendar },
+  { title: "Converter", url: "converter", icon: Search },
 ];
 
 export function AppSidebar() {
+  const navigate = useNavigate();
   return (
     <Sidebar collapsible="icon" className="!border-r bg-background">
       {/* Header */}
@@ -65,10 +66,10 @@ export function AppSidebar() {
                     asChild
                     className="!h-11  rounded-xl gap-3 data-[active=true]:bg-accent data-[active=true]:text-accent-foreground"
                   >
-                    <a href={item.url}>
+                    <button onClick={() => navigate(item.url)}>
                       <item.icon className="!h-5 !w-5 text-primary" />
                       <span className="text-sm font-medium">{item.title}</span>
-                    </a>
+                    </button>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

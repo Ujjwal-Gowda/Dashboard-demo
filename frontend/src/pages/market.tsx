@@ -1,6 +1,6 @@
-import { CardDefault } from "../components/app-card.tsx";
-import DemoPage from "../components/table/page.tsx";
-import { ChartAreaInteractive } from "../components/area-chart.tsx";
+// import { CardDefault } from "../components/app-card.tsx";
+// import DemoPage from "../components/table/page.tsx";
+// import { ChartAreaInteractive } from "../components/area-chart.tsx";
 // const market = () => {
 //   return (
 //     <>

@@ -1,0 +1,50 @@
+import { Request, Response } from "express";
+import axios from "axios";
+import dotenv from "dotenv";
+import { number } from "zod";
+dotenv.config();
+const API_KEY = process.env.SECRET_KEY;
+type WeeklyCandle = {
+  "1. open": string;
+  "2. high": string;
+  "3. low": string;
+  "4. close": string;
+};
+export async function exchangeRates(req: Request, res: Response) {
+  const FromCur = req.query.from;
+  const ToCur = req.query.to;
+  const size = req.query.size;
+  if (!FromCur || !ToCur) {
+    return res.status(400).json({ error: "missing field" });
+  }
+  try {
+    const data = await axios.get(
+      // `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=${FromCur}&to_symbol=${ToCur}&apikey=${API_KEY}`,
+      `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=EUR&to_symbol=USD&apikey=demo`,
+    );
+
+    const raw = data.data["Time Series FX (Daily)"] as Record<
+      string,
+      WeeklyCandle
+    >;
+    const cleaned = Object.entries(raw).map(([date, values]) => ({
+      date,
+      open: Number(values["1. open"]),
+      high: Number(values["2. high"]),
+      low: Number(values["3. low"]),
+      price: Number(values["4. close"]),
+    }));
+    if (size == "7days") {
+      const response = cleaned.slice(0, 7);
+      return res.json({ response });
+    } else if (size == "30days") {
+      const response = cleaned.slice(0, 30);
+      return res.json({ response });
+    }
+
+    console.log(cleaned, FromCur, ToCur);
+    return res.json({ cleaned });
+  } catch (error: any) {
+    console.error("Axios error:", error.response?.data || error.message);
+  }
+}

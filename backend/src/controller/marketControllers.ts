@@ -9,6 +9,7 @@ type WeeklyCandle = {
   "2. high": string;
   "3. low": string;
   "4. close": string;
+  "5. volume": string;
 };
 export async function exchangeRates(req: Request, res: Response) {
   const FromCur = req.query.from;
@@ -43,6 +44,46 @@ export async function exchangeRates(req: Request, res: Response) {
     }
 
     console.log(cleaned, FromCur, ToCur);
+    return res.json({ cleaned });
+  } catch (error: any) {
+    console.error("Axios error:", error.response?.data || error.message);
+  }
+}
+
+export async function stocksinfo(req: Request, res: Response) {
+  const symbol = req.query.symbol;
+
+  const size = req.query.size;
+  if (!symbol) {
+    return res.status(400).json({ error: "missing field" });
+  }
+  try {
+    const data = await axios.get(
+      // `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=RELIANCE.BSE&outputsize=compact&apikey=demo`,
+      `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=RELIANCE.BSE&outputsize=full&apikey=demo`,
+    );
+
+    const raw = data.data["Time Series (Daily)"] as Record<
+      string,
+      WeeklyCandle
+    >;
+    console.log(data, symbol);
+    const cleaned = Object.entries(raw).map(([date, values]) => ({
+      date,
+      open: Number(values["1. open"]),
+      high: Number(values["2. high"]),
+      low: Number(values["3. low"]),
+      price: Number(values["4. close"]),
+      volume: Number(values["5. volume"]),
+    }));
+    if (size == "7days") {
+      const response = cleaned.slice(0, 7);
+      return res.json({ response });
+    } else if (size == "30days") {
+      const response = cleaned.slice(0, 30);
+      return res.json({ response });
+    }
+    console.log(cleaned);
     return res.json({ cleaned });
   } catch (error: any) {
     console.error("Axios error:", error.response?.data || error.message);

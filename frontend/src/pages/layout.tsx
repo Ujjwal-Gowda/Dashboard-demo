@@ -5,17 +5,18 @@ import { BreadcrumbDemo } from "../components/breadCrumb.tsx";
 export default function layout() {
   return (
     <SidebarProvider>
-      <main className="flex w-full h-screen gap-5 ">
-        <div className=" flex-none">
+      <main className="flex h-screen w-full overflow-hidden">
+        {/* Sidebar */}
+        <div className="flex-none">
           <AppSidebar />
           <div className="md:hidden p-2">
             <SidebarTrigger />
           </div>
         </div>
-        <div className="flex-1 grid grid-cols-[320px_1fr] gap-10 p-5">
-          <div className="col-span-2 h-10 p-3">
-            <BreadcrumbDemo />
-          </div>
+
+        {/* Main content */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          <BreadcrumbDemo />
           <Outlet />
         </div>
       </main>

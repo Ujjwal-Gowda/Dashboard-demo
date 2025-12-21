@@ -1,31 +1,70 @@
-import { CardDefault } from "../components/app-card.tsx";
-import DemoPage from "../components/table/page.tsx";
-import { Card } from "../components/ui/card.tsx";
-import { ChartAreaInteractive } from "../components/area-chart.tsx";
-const homepage = () => {
-  return (
-    <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-      {/* 🔹 Top KPI Cards */}
-      <CardDefault />
-      <CardDefault />
-      <CardDefault />
-      <CardDefault />
+import { KPICard } from "../components/kpi-card";
+import { Card } from "../components/ui/card";
+import { ChartAreaInteractive } from "../components/area-chart";
+import DemoPage from "../components/table/page";
+import { BarChart3, Users, Rocket, Mail } from "lucide-react";
 
-      {/* 📈 Market Indicator / Chart */}
-      <Card className="col-span-1 xl:col-span-4">
+export default function HomePage() {
+  return (
+    <div className="space-y-6">
+      {/* KPI Card */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <KPICard
+          title="Market Assets"
+          value="2,431"
+          icon={BarChart3}
+          stats={[
+            { label: "Crypto", value: 412 },
+            { label: "Stocks", value: 1720 },
+          ]}
+        />
+
+        <KPICard
+          title="Tracked Symbols"
+          value="102"
+          icon={Users}
+          stats={[
+            { label: "Active", value: 98 },
+            { label: "Inactive", value: 4 },
+          ]}
+        />
+
+        <KPICard
+          title="Alerts"
+          value="2"
+          icon={Rocket}
+          stats={[
+            { label: "Triggered", value: 1 },
+            { label: "Pending", value: 1 },
+          ]}
+        />
+
+        <KPICard
+          title="API Requests"
+          value="1"
+          icon={Mail}
+          stats={[
+            { label: "Today", value: 1 },
+            { label: "Failed", value: 0 },
+          ]}
+        />
+      </div>
+
+      {/*  CHART */}
+      <Card className="w-full">
         <ChartAreaInteractive />
       </Card>
 
-      {/* 📊 Bottom Tables */}
-      <Card className="col-span-1 xl:col-span-2">
-        <DemoPage />
-      </Card>
+      {/* TABLES */}
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+        <Card>
+          <DemoPage />
+        </Card>
 
-      <Card className="col-span-1 xl:col-span-2">
-        <DemoPage />
-      </Card>
+        <Card>
+          <DemoPage />
+        </Card>
+      </div>
     </div>
   );
-};
-
-export default homepage;
+}

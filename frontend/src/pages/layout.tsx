@@ -1,23 +1,21 @@
 import { Outlet } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "../components/ui/sidebar";
-import { AppSidebar } from "../components/app-sidebar.tsx";
-import { BreadcrumbDemo } from "../components/breadCrumb.tsx";
-export default function layout() {
+import { AppSidebar } from "../components/app-sidebar";
+import { BreadcrumbDemo } from "../components/breadCrumb";
+
+export default function Layout() {
   return (
     <SidebarProvider>
       <main className="flex h-screen w-full overflow-hidden">
-        {/* Sidebar */}
-        <div className="flex-none">
-          <AppSidebar />
-          <div className="md:hidden p-2">
+        <AppSidebar />
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <header className="flex items-center gap-4 border-b px-6 py-4">
             <SidebarTrigger />
+            <BreadcrumbDemo />
+          </header>
+          <div className="flex-1 overflow-y-auto p-6">
+            <Outlet />
           </div>
-        </div>
-
-        {/* Main content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          <BreadcrumbDemo />
-          <Outlet />
         </div>
       </main>
     </SidebarProvider>

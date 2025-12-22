@@ -89,3 +89,58 @@ export async function stocksinfo(req: Request, res: Response) {
     console.error("Axios error:", error.response?.data || error.message);
   }
 }
+
+export async function cryptomarket(req: Request, res: Response) {
+  const symbol = req.query.symbol;
+  const market = req.query.market;
+  const size = req.query.size;
+  if (!symbol || !market) {
+    return res.status(400).json({ error: "missing field" });
+  }
+  try {
+    const data = await axios.get(
+      // `https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=${symbol}&market=${market}&apikey=${API_KEY}`,
+      `https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=EUR&apikey=demo`,
+    );
+
+    const raw = data.data["Time Series (Digital Currency Daily)"] as Record<
+      string,
+      WeeklyCandle
+    >;
+    console.log(data, symbol);
+    const cleaned = Object.entries(raw).map(([date, values]) => ({
+      date,
+      open: Number(values["1. open"]),
+      high: Number(values["2. high"]),
+      low: Number(values["3. low"]),
+      price: Number(values["4. close"]),
+      volume: Number(values["5. volume"]),
+    }));
+    if (size == "7days") {
+      const response = cleaned.slice(0, 7);
+      return res.json({ response });
+    } else if (size == "30days") {
+      const response = cleaned.slice(0, 30);
+      return res.json({ response });
+    }
+    console.log(cleaned);
+    return res.json({ cleaned });
+  } catch (error: any) {
+    console.error("Axios error:", error.response?.data || error.message);
+  }
+}
+export function marketStatus(req: Request, res: Response) {
+  const now = new Date();
+
+  const istHour = now.getUTCHours() + 5.5;
+  const istMinutes = now.getUTCMinutes();
+
+  const isNSEOpen =
+    (istHour > 9 || (istHour === 9 && istMinutes >= 15)) &&
+    (istHour < 15 || (istHour === 15 && istMinutes <= 30));
+
+  res.json({
+    market: "NSE",
+    open: isNSEOpen,
+  });
+}

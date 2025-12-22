@@ -11,6 +11,7 @@ type WeeklyCandle = {
   "4. close": string;
   "5. volume": string;
 };
+const finageKey = process.env.FINAGE_KEY;
 const API_KEY = process.env.SECRET_KEY;
 export async function cryptoinfo(req: Request, res: Response) {
   const currency = req.query.CUR;
@@ -21,14 +22,24 @@ export async function cryptoinfo(req: Request, res: Response) {
   try {
     const data = await axios.get(
       `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=${COIN}&to_currency=${currency}&apikey=${API_KEY}`,
+
+      // `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=BTC&to_currency=EUR&apikey=demo`,
       {
         headers: {
           "Content-Type": "application/json",
         },
       },
     );
+
     const raw = data.data["Realtime Currency Exchange Rate"];
 
+    if (!raw) {
+      return res.status(429).json({
+        error: "Rate limit hit",
+        raw: data.data,
+      });
+    }
+    console.log(raw);
     const cleanedData = {
       pair: `${raw["1. From_Currency Code"]}/${raw["3. To_Currency Code"]}`,
       from: raw["1. From_Currency Code"],
@@ -41,11 +52,10 @@ export async function cryptoinfo(req: Request, res: Response) {
     console.log(cleanedData);
     return res.json({ cleanedData });
   } catch (error) {
-    return res.json({ "failed to fetch data": error });
+    return res.status(400).json({ "failed to fetch data": error });
   }
 }
 
-("https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_WEEKLY&symbol=BTC&market=EUR&apikey=demo");
 export async function chartweekly(req: Request, res: Response) {
   const currency = req.query.CUR;
   const COIN = req.query.coin;
@@ -147,5 +157,57 @@ export async function gainlosers(req: Request, res: Response) {
       error: "failed to fetch data",
       details: error.response?.data || error.message,
     });
+  }
+}
+
+export async function finagecrypto(req: Request, res: Response) {
+  const COIN = req.query.coin;
+  if (!COIN) {
+    return res.status(400).json({ error: "missing field" });
+  }
+  try {
+    const data = await axios.get(
+      `https://api.finage.co.uk/last/crypto/${COIN}?apikey=${finageKey}`,
+      // `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=BTC&to_currency=EUR&apikey=demo`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    const raw = data.data;
+    console.log(raw);
+    const cleanedData = {
+      price: raw?.price,
+      symbol: raw?.symbol,
+    };
+    console.log(cleanedData);
+    return res.json({ cleanedData });
+  } catch (error) {
+    return res.status(400).json({ "failed to fetch data": error });
+  }
+}
+export async function curexchangee(req: Request, res: Response) {
+  const tocurr = req.query.to;
+  if (!tocurr) {
+    return res.status(400).json({ error: "missing field" });
+  }
+  try {
+    const data = await axios.get(
+      // `https://www.alphavantage.co/query?function=fx_daily&from_symbol=${fromcur}&to_symbol=${tocur}&apikey=${api_key}`,
+
+      `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/eur.json`,
+    );
+
+    const raw = data.data.eur;
+    const cleaned = {
+      from: "EUR",
+      to: raw[tocurr as string],
+    };
+
+    console.log(raw, cleaned, tocurr);
+    return res.json({ cleaned });
+  } catch (error: any) {
+    console.error("axios error:", error.response?.data || error.message);
   }
 }

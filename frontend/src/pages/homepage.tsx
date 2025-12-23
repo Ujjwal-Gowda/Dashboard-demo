@@ -16,6 +16,9 @@ interface KPIResponse {
     lastUpdated: string;
   };
 }
+
+import { useChartData } from "../hooks/useChartData";
+
 function useCryptoPrice(coin: string) {
   const [price, setPrice] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -152,6 +155,10 @@ export default function HomePage() {
   const { price: currencyprice } = useCurrencyPrice("usd");
   const { marketOp: marketOpen } = useMarketOpen();
 
+  const { data: btcHistory, loading } = useChartData(
+    "http://localhost:5000/api/crypto/weekly",
+    { coin: "BTC", CUR: "EUR" },
+  );
   return (
     <div className="space-y-6">
       {/* KPI Cards */}
@@ -184,9 +191,15 @@ export default function HomePage() {
 
       {/* Chart */}
       <Card>
-        <div className="px-4">
-          <ChartAreaInteractive />
-        </div>
+        {loading ? (
+          <div className="p-6">Loading chart…</div>
+        ) : (
+          <ChartAreaInteractive
+            title="BTC Price History"
+            description="Daily BTC price (USD)"
+            data={btcHistory}
+          />
+        )}
       </Card>
 
       {/* Tables */}

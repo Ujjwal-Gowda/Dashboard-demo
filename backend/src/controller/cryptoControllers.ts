@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import axios from "axios";
 import { number } from "zod";
 dotenv.config();
+const COINPAPRIKA_URL = "https://api.coinpaprika.com/v1/tickers";
 
 type WeeklyCandle = {
   "1. open": string;
@@ -13,6 +14,7 @@ type WeeklyCandle = {
 };
 const finageKey = process.env.FINAGE_KEY;
 const API_KEY = process.env.SECRET_KEY;
+
 export async function cryptoinfo(req: Request, res: Response) {
   const currency = req.query.CUR;
   const COIN = req.query.coin;
@@ -187,6 +189,7 @@ export async function finagecrypto(req: Request, res: Response) {
     return res.status(400).json({ "failed to fetch data": error });
   }
 }
+
 export async function curexchangee(req: Request, res: Response) {
   const tocurr = req.query.to;
   if (!tocurr) {
@@ -211,3 +214,57 @@ export async function curexchangee(req: Request, res: Response) {
     console.error("axios error:", error.response?.data || error.message);
   }
 }
+
+export const getCryptoTable = async (req: Request, res: Response) => {
+  try {
+    const {
+      limit = 20,
+      page = 1,
+      search,
+    } = req.query as {
+      limit?: string;
+      page?: string;
+      search?: string;
+    };
+
+    const response = await axios.get(COINPAPRIKA_URL);
+    let data = response.data;
+
+    // 🔍 Optional search (BTC, ETH, etc.)
+    if (search) {
+      const q = search.toLowerCase();
+      data = data.filter(
+        (coin: any) =>
+          coin.symbol.toLowerCase().includes(q) ||
+          coin.name.toLowerCase().includes(q),
+      );
+    }
+
+    const start = (Number(page) - 1) * Number(limit);
+    const end = start + Number(limit);
+
+    const tableData = data.slice(start, end).map((coin: any) => ({
+      id: coin.id,
+      rank: coin.rank,
+      symbol: coin.symbol,
+      name: coin.name,
+      price: coin.quotes.USD.price,
+      change24h: coin.quotes.USD.percent_change_24h,
+      marketCap: coin.quotes.USD.market_cap,
+      volume24h: coin.quotes.USD.volume_24h,
+      circulatingSupply: coin.circulating_supply,
+    }));
+
+    res.json({
+      meta: {
+        page: Number(page),
+        limit: Number(limit),
+        total: data.length,
+      },
+      data: tableData,
+    });
+  } catch (error) {
+    console.error("CoinPaprika fetch failed", error);
+    res.status(500).json({ message: "Failed to fetch crypto data" });
+  }
+};

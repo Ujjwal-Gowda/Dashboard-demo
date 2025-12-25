@@ -1,8 +1,10 @@
 import { KPICard } from "../components/kpi-card";
+import { useTable } from "../hooks/tablehook";
 import { Card } from "../components/ui/card";
 import { ChartAreaInteractive } from "../components/area-chart";
-import DemoPage from "../components/table/page";
+import { TableDemo } from "../components/table/page";
 import { BarChart3, Users, Rocket, Mail } from "lucide-react";
+import { useChartData } from "../hooks/useChartData";
 import { useEffect, useState } from "react";
 import axios from "axios";
 interface KPIResponse {
@@ -17,7 +19,15 @@ interface KPIResponse {
   };
 }
 
-import { useChartData } from "../hooks/useChartData";
+export interface CryptoRow {
+  rank: number;
+  symbol: string;
+  name: string;
+  price: number;
+  change24h: number;
+  marketCap: number;
+  volume24h: number;
+}
 
 function useCryptoPrice(coin: string) {
   const [price, setPrice] = useState<number | null>(null);
@@ -116,6 +126,7 @@ function useCurrencyPrice(curr: string) {
 
   return { price, loading };
 }
+
 function useMarketOpen() {
   const [loading, setLoading] = useState(true);
   const [marketOp, setMarket] = useState(false);
@@ -159,27 +170,41 @@ export default function HomePage() {
     "http://localhost:5000/api/crypto/weekly",
     { coin: "BTC", CUR: "EUR" },
   );
+  // const { data: exchangeHis } = useChartData(
+  //   "http://localhost:5000/api/market/weeklyex",
+  //   { from: "USD", to: "INR" },
+  // );
+  // console.log("exchange", exchangeHis);
+  const {
+    data: tableData,
+    loading: tableLoading,
+    error: tableError,
+  } = useTable<CryptoRow>({
+    endpoint: "http://localhost:5000/api/crypto/table",
+    params: { page: 1, limit: 10 },
+  });
+
   return (
     <div className="space-y-6">
       {/* KPI Cards */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <KPICard
-          title="BTC Price"
-          value={btcPrice ? `$${btcPrice}` : "—"}
-          icon={BarChart3}
-        />
-
-        <KPICard
-          title="ETH Price"
-          // value={ethPrice ? `$${ethPrice}` : "—"}
-          icon={Users}
-        />
-
-        <KPICard
-          title="EUR To USD"
-          value={"1EUR = " + currencyprice + "USD"}
-          icon={Rocket}
-        />
+        {/* <KPICard */}
+        {/*   title="BTC Price" */}
+        {/*   value={btcPrice ? `$${btcPrice}` : "—"} */}
+        {/*   icon={BarChart3} */}
+        {/* /> */}
+        {/**/}
+        {/* <KPICard */}
+        {/*   title="ETH Price" */}
+        {/*   // value={ethPrice ? `$${ethPrice}` : "—"} */}
+        {/*   icon={Users} */}
+        {/* /> */}
+        {/**/}
+        {/* <KPICard */}
+        {/*   title="EUR To USD" */}
+        {/*   value={"1EUR = " + currencyprice + "USD"} */}
+        {/*   icon={Rocket} */}
+        {/* /> */}
 
         <KPICard
           title="Market Status"
@@ -190,25 +215,36 @@ export default function HomePage() {
       </div>
 
       {/* Chart */}
-      <Card>
-        {loading ? (
-          <div className="p-6">Loading chart…</div>
-        ) : (
-          <ChartAreaInteractive
-            title="BTC Price History"
-            description="Daily BTC price (USD)"
-            data={btcHistory}
-          />
-        )}
-      </Card>
-
+      {/* <Card> */}
+      {/*   {loading ? ( */}
+      {/*     <div className="p-6">Loading chart…</div> */}
+      {/*   ) : ( */}
+      {/*     <div className="px-4"> */}
+      {/*       <ChartAreaInteractive */}
+      {/*         title="BTC Price History" */}
+      {/*         description="Daily BTC price (USD)" */}
+      {/*         data={btcHistory} */}
+      {/*       /> */}
+      {/*     </div> */}
+      {/*   )} */}
+      {/* </Card> */}
+      {/* <Card> */}
+      {/*   {loading ? ( */}
+      {/*     <div className="p-6">Loading chart…</div> */}
+      {/*   ) : ( */}
+      {/*     <div className="px-4"> */}
+      {/*       <ChartAreaInteractive */}
+      {/*         title="BTC Price History" */}
+      {/*         description="Daily BTC price (USD)" */}
+      {/*         data={exchangeHis} */}
+      {/*       /> */}
+      {/*     </div> */}
+      {/*   )} */}
+      {/* </Card> */}
       {/* Tables */}
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+      <div className="">
         <Card>
-          <DemoPage />
-        </Card>
-        <Card>
-          <DemoPage />
+          <TableDemo data={tableData} loading={tableLoading} name={"home"} />
         </Card>
       </div>
     </div>

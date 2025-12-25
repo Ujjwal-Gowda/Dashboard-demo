@@ -26,23 +26,30 @@ const chartConfig = {
     label: "Price",
     color: "var(--chart-1)",
   },
+  exprice: {
+    label: "Comparison",
+    color: "var(--chart-2)",
+  },
 } satisfies ChartConfig;
 
 interface ChartPoint {
   date: string;
   price: number;
+  exprice: number;
 }
 
 interface ChartAreaInteractiveProps {
   title: string;
   description?: string;
   data: ChartPoint[];
+  exdata: ChartPoint[];
 }
 
 export function ChartAreaInteractive({
   title,
   description,
   data,
+  exdata,
 }: ChartAreaInteractiveProps) {
   const [timeRange, setTimeRange] = React.useState("90d");
 

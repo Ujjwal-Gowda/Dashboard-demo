@@ -13,9 +13,26 @@ import {
   SelectItem,
   SelectValue,
 } from "../components/ui/select";
-import MarketTable from "../components/table/page";
-
+import { TableDemo } from "../components/table/page";
+import { useTable } from "../hooks/tablehook";
+export interface CryptoRow {
+  date: string;
+  open: number;
+  high: number;
+  low: number;
+  price: number;
+  volume: number;
+}
 export default function CryptoMarketPage() {
+  const {
+    data: tableData,
+    loading: tableLoading,
+    error: tableError,
+  } = useTable<CryptoRow>({
+    endpoint: "http://localhost:5000/api/market/crypto",
+    params: { symbol: "ETH", market: "usd" },
+  });
+
   return (
     <div className="flex flex-col gap-6">
       {/* 🔹 Page Header */}
@@ -94,7 +111,7 @@ export default function CryptoMarketPage() {
         </CardHeader>
 
         <CardContent>
-          <MarketTable />
+          <TableDemo data={tableData} name={"crypto"} />
         </CardContent>
       </Card>
     </div>

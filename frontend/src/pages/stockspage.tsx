@@ -13,8 +13,16 @@ import {
   SelectItem,
   SelectValue,
 } from "../components/ui/select";
-import MarketTable from "../components/table/page";
-
+import { TableDemo } from "../components/table/page";
+import { useTable } from "../hooks/tablehook";
+export interface stocksRow {
+  date: string;
+  open: number;
+  high: number;
+  low: number;
+  price: number;
+  volume: number;
+}
 const exchanges = [
   { label: "India (BSE)", value: "BSE" },
   { label: "India (NSE)", value: "NSE" },
@@ -24,6 +32,14 @@ const exchanges = [
 ];
 
 export default function StocksPage() {
+  const {
+    data: tableData,
+    loading: tableLoading,
+    error: tableError,
+  } = useTable<stocksRow>({
+    endpoint: "http://localhost:5000/api/market/stocks",
+    params: { symbol: "ETH" },
+  });
   return (
     <div className="space-y-6">
       {/* 🔹 Page Header */}
@@ -84,7 +100,7 @@ export default function StocksPage() {
         </CardHeader>
 
         <CardContent>
-          <MarketTable />
+          <TableDemo data={tableData} name="stocks" />
         </CardContent>
       </Card>
     </div>

@@ -12,8 +12,7 @@ import {
   SelectItem,
   SelectValue,
 } from "../components/ui/select";
-import MarketTable from "../components/table/page";
-
+import { TableDemo } from "../components/table/page";
 const currencies = ["USD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF", "INR"];
 
 export default function ForexPage() {
@@ -85,7 +84,7 @@ export default function ForexPage() {
         </CardHeader>
 
         <CardContent>
-          <MarketTable />
+          <TableDemo />
         </CardContent>
       </Card>
     </div>

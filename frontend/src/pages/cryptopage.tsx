@@ -15,6 +15,7 @@ import {
 } from "../components/ui/select";
 import { TableDemo } from "../components/table/page";
 import { useTable } from "../hooks/tablehook";
+import { useState } from "react";
 export interface CryptoRow {
   date: string;
   open: number;
@@ -24,13 +25,21 @@ export interface CryptoRow {
   volume: number;
 }
 export default function CryptoMarketPage() {
+  const [selectCoin, setSelectCoin] = useState<string>("");
+  const [selectMarket, setSelectMarket] = useState<string>("");
+
+  function resetClicked() {
+    setSelectCoin("");
+    setSelectMarket("");
+  }
+  console.log(selectCoin, selectMarket);
   const {
     data: tableData,
     loading: tableLoading,
     error: tableError,
   } = useTable<CryptoRow>({
     endpoint: "http://localhost:5000/api/market/crypto",
-    params: { symbol: "ETH", market: "usd" },
+    params: { symbol: selectCoin, market: selectMarket },
   });
 
   return (
@@ -58,7 +67,12 @@ export default function CryptoMarketPage() {
               <label className="text-xs text-muted-foreground">
                 Crypto Symbol
               </label>
-              <Input placeholder="BTC, ETH, SOL..." />
+              <Input
+                onChange={(e) => {
+                  setSelectCoin(e.target.value.toUpperCase());
+                }}
+                placeholder="BTC, ETH, SOL..."
+              />
             </div>
 
             {/* Preset Coins */}
@@ -66,10 +80,12 @@ export default function CryptoMarketPage() {
               <label className="text-xs text-muted-foreground">
                 Popular Coins
               </label>
-              <Select>
+
+              <Select value={selectCoin} onValueChange={setSelectCoin}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select coin" />
                 </SelectTrigger>
+
                 <SelectContent>
                   <SelectItem value="BTC">Bitcoin (BTC)</SelectItem>
                   <SelectItem value="ETH">Ethereum (ETH)</SelectItem>
@@ -83,7 +99,7 @@ export default function CryptoMarketPage() {
             {/* Market */}
             <div className="space-y-1">
               <label className="text-xs text-muted-foreground">Market</label>
-              <Select>
+              <Select value={selectMarket} onValueChange={setSelectMarket}>
                 <SelectTrigger>
                   <SelectValue placeholder="Market" />
                 </SelectTrigger>
@@ -97,23 +113,30 @@ export default function CryptoMarketPage() {
 
             {/* Actions */}
             <div className="flex gap-2 md:justify-end">
-              <Button variant="outline">Reset</Button>
-              <Button>Apply</Button>
+              <Button variant="outline" onClick={resetClicked}>
+                Reset
+              </Button>
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* 🔹 Market Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Price History</CardTitle>
-        </CardHeader>
 
-        <CardContent>
-          <TableDemo data={tableData} name={"crypto"} />
-        </CardContent>
-      </Card>
+      {selectCoin != "" && selectMarket != "" && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Price History</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <TableDemo
+              data={tableData}
+              loading={tableLoading}
+              name={"crypto"}
+            />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

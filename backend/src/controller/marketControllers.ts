@@ -97,17 +97,16 @@ export async function stocksinfo(req: Request, res: Response) {
     return res.status(400).json({ error: "missing field" });
   }
   try {
-    const data = await axios.get(
+    const result = await axios.get(
       // `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=RELIANCE.BSE&outputsize=compact&apikey=demo`,
       `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=RELIANCE.BSE&outputsize=full&apikey=demo`,
     );
 
-    const raw = data.data["Time Series (Daily)"] as Record<
+    const raw = result.data["Time Series (Daily)"] as Record<
       string,
       WeeklyCandle
     >;
-    console.log(data, symbol);
-    const cleaned = Object.entries(raw).map(([date, values]) => ({
+    const data = Object.entries(raw).map(([date, values]) => ({
       date,
       open: Number(values["1. open"]),
       high: Number(values["2. high"]),
@@ -116,14 +115,14 @@ export async function stocksinfo(req: Request, res: Response) {
       volume: Number(values["5. volume"]),
     }));
     if (size == "7days") {
-      const response = cleaned.slice(0, 7);
+      const response = data.slice(0, 7);
       return res.json({ response });
     } else if (size == "30days") {
-      const response = cleaned.slice(0, 30);
+      const response = data.slice(0, 30);
       return res.json({ response });
     }
-    console.log(cleaned);
-    return res.json({ cleaned });
+    console.log(data);
+    return res.json({ data });
   } catch (error: any) {
     console.error("Axios error:", error.response?.data || error.message);
   }

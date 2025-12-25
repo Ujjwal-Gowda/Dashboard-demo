@@ -15,6 +15,7 @@ import {
 } from "../components/ui/select";
 import { TableDemo } from "../components/table/page";
 import { useTable } from "../hooks/tablehook";
+import { useState } from "react";
 export interface stocksRow {
   date: string;
   open: number;
@@ -23,23 +24,21 @@ export interface stocksRow {
   price: number;
   volume: number;
 }
-const exchanges = [
-  { label: "India (BSE)", value: "BSE" },
-  { label: "India (NSE)", value: "NSE" },
-  { label: "US (NASDAQ)", value: "NASDAQ" },
-  { label: "US (NYSE)", value: "NYSE" },
-  { label: "UK (LSE)", value: "LON" },
-];
 
 export default function StocksPage() {
+  const [selectStock, setStock] = useState<string>("");
+  function resetStock() {
+    setStock("");
+  }
   const {
     data: tableData,
     loading: tableLoading,
     error: tableError,
   } = useTable<stocksRow>({
     endpoint: "http://localhost:5000/api/market/stocks",
-    params: { symbol: "ETH" },
+    params: { symbol: selectStock },
   });
+
   return (
     <div className="space-y-6">
       {/* 🔹 Page Header */}
@@ -66,43 +65,52 @@ export default function StocksPage() {
               <label className="text-xs text-muted-foreground">
                 Stock Symbol
               </label>
-              <Input placeholder="RELIANCE, AAPL, TSLA..." className="w-64" />
+              <Input
+                onChange={(e) => {
+                  setStock(e.target.value);
+                }}
+                placeholder="RELIANCE, AAPL, TSLA..."
+                className="w-64"
+              />
             </div>
 
             {/* Exchange */}
             <div className="space-y-1">
               <label className="text-xs text-muted-foreground">Exchange</label>
-              <Select>
+              <Select value={selectStock} onValueChange={setStock}>
                 <SelectTrigger className="w-44">
                   <SelectValue placeholder="Select exchange" />
                 </SelectTrigger>
                 <SelectContent>
-                  {exchanges.map((ex) => (
-                    <SelectItem key={ex.value} value={ex.value}>
-                      {ex.label}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="BSE">India (BSE)</SelectItem>
+                  <SelectItem value="NSE">India (NSE)</SelectItem>
+                  <SelectItem value="NASDAQ">US (NASDAQ)</SelectItem>
+                  <SelectItem value="MYSE">US (NYSE)</SelectItem>
+                  <SelectItem value="LON">UK (LSE)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {/* Actions */}
-            <Button className="ml-auto">Apply</Button>
-            <Button variant="outline">Reset</Button>
+            <Button variant="outline" onClick={resetStock}>
+              Reset
+            </Button>
           </div>
         </CardContent>
       </Card>
 
       {/* 🔹 Market Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Stock Data</CardTitle>
-        </CardHeader>
+      {selectStock != "" && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Stock Data</CardTitle>
+          </CardHeader>
 
-        <CardContent>
-          <TableDemo data={tableData} name="stocks" />
-        </CardContent>
-      </Card>
+          <CardContent>
+            <TableDemo data={tableData} loading={tableLoading} name="stocks" />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

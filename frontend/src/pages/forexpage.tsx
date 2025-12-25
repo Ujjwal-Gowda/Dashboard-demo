@@ -12,10 +12,33 @@ import {
   SelectItem,
   SelectValue,
 } from "../components/ui/select";
-import { TableDemo } from "../components/table/page";
-const currencies = ["USD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF", "INR"];
+import { useState } from "react";
 
+import { useTable } from "../hooks/tablehook";
+import { TableDemo } from "../components/table/page";
+
+export interface ForexRow {
+  date: string;
+  open: number;
+  high: number;
+  low: number;
+  price: number;
+}
 export default function ForexPage() {
+  const [selectFrom, setFrom] = useState<string>("");
+  const [selectTo, setTo] = useState<string>("");
+  function resetforex() {
+    setFrom("");
+    setTo("");
+  }
+  const {
+    data: tableData,
+    loading: tableLoading,
+    error: tableError,
+  } = useTable<ForexRow>({
+    endpoint: "http://localhost:5000/api/market/forex",
+    params: { from: selectFrom, to: selectTo },
+  });
   return (
     <div className="space-y-6">
       {/* 🔹 Page Header */}
@@ -39,16 +62,19 @@ export default function ForexPage() {
             {/* From */}
             <div className="space-y-1">
               <label className="text-xs text-muted-foreground">From</label>
-              <Select>
+              <Select value={selectFrom} onValueChange={setFrom}>
                 <SelectTrigger className="w-32">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
-                  {currencies.map((cur) => (
-                    <SelectItem key={cur} value={cur}>
-                      {cur}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="USE">USD</SelectItem>
+                  <SelectItem value="EUR">EUR</SelectItem>
+                  <SelectItem value="GBP">GBP</SelectItem>
+                  <SelectItem value="JPY">JPY</SelectItem>
+                  <SelectItem value="AUD">AUD</SelectItem>
+                  <SelectItem value="CAD">CAD</SelectItem>
+                  <SelectItem value="CHF">CHF</SelectItem>
+                  <SelectItem value="INR">INR</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -56,37 +82,43 @@ export default function ForexPage() {
             {/* To */}
             <div className="space-y-1">
               <label className="text-xs text-muted-foreground">To</label>
-              <Select>
+              <Select value={selectTo} onValueChange={setTo}>
                 <SelectTrigger className="w-32">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
-                  {currencies.map((cur) => (
-                    <SelectItem key={cur} value={cur}>
-                      {cur}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value="USE">USD</SelectItem>
+                  <SelectItem value="EUR">EUR</SelectItem>
+                  <SelectItem value="GBP">GBP</SelectItem>
+                  <SelectItem value="JPY">JPY</SelectItem>
+                  <SelectItem value="AUD">AUD</SelectItem>
+                  <SelectItem value="CAD">CAD</SelectItem>
+                  <SelectItem value="CHF">CHF</SelectItem>
+                  <SelectItem value="INR">INR</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {/* Actions */}
-            <Button className="ml-auto">Apply</Button>
-            <Button variant="outline">Reset</Button>
+            <Button onClick={resetforex} variant="outline">
+              Reset
+            </Button>
           </div>
         </CardContent>
       </Card>
 
       {/* 🔹 Market Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Exchange Rates</CardTitle>
-        </CardHeader>
+      {selectFrom != "" && selectTo != "" && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Exchange Rates</CardTitle>
+          </CardHeader>
 
-        <CardContent>
-          <TableDemo />
-        </CardContent>
-      </Card>
+          <CardContent>
+            <TableDemo data={tableData} loading={tableLoading} name={"forex"} />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

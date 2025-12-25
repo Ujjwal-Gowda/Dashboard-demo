@@ -64,7 +64,7 @@ export function TableDemo({ data = [], loading, name }: TableDemoProps) {
         </TableBody>
       </Table>
     );
-  } else if (name == "crypto" || name == "stocks") {
+  } else if (name == "crypto" || name == "stocks" || name == "forex") {
     if (loading) {
       return <div className="p-4">Loading table…</div>;
     }
@@ -84,7 +84,9 @@ export function TableDemo({ data = [], loading, name }: TableDemoProps) {
             <TableHead>high</TableHead>
             <TableHead className="text-right">low</TableHead>
             <TableHead className="text-right">price</TableHead>
-            <TableHead className="text-right"> volume</TableHead>
+            {name != "forex" && (
+              <TableHead className="text-right"> volume</TableHead>
+            )}
           </TableRow>
         </TableHeader>
 
@@ -98,10 +100,11 @@ export function TableDemo({ data = [], loading, name }: TableDemoProps) {
               <TableCell className="text-right">
                 ${coin.price.toLocaleString()}
               </TableCell>
-
-              <TableCell className="text-right">
-                ${coin.volume.toLocaleString()}
-              </TableCell>
+              {name != "forex" && (
+                <TableCell className="text-right">
+                  ${coin.volume.toLocaleString()}
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>

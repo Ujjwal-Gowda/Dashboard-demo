@@ -44,6 +44,7 @@ export default function ForexPage() {
     "http://localhost:5000/api/market/weeklyex",
     { from: selectFrom, to: selectTo },
   );
+  console.log(forexHistory);
   return (
     <div className="space-y-6">
       {/* 🔹 Page Header */}
@@ -133,7 +134,7 @@ export default function ForexPage() {
               <ChartAreaInteractive
                 title="forex Price History"
                 description="Daily forex price (USD)"
-                data={forexHistory}
+                data={forexHistory.reverse()}
               />
             </div>
           )}

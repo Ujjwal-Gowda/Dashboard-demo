@@ -13,10 +13,8 @@ export function BreadcrumbDemo() {
 
   const segments = location.pathname.split("/").filter(Boolean);
   const crumbs = segments.map((segment, index) => {
-    let path = "";
-    if (!segments.includes("market")) {
-      path = "/" + segments.slice(0, index + 1).join("/");
-    }
+    const path = "/" + segments.slice(0, index + 1).join("/");
+
     return {
       label: formatLabel(segment),
       path,

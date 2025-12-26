@@ -128,6 +128,41 @@ export async function stocksinfo(req: Request, res: Response) {
   }
 }
 
+export async function stockschart(req: Request, res: Response) {
+  const symbol = req.query.symbol;
+
+  const size = req.query.size;
+  if (!symbol) {
+    return res.status(400).json({ error: "missing field" });
+  }
+  try {
+    const result = await axios.get(
+      // `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=RELIANCE.BSE&outputsize=compact&apikey=demo`,
+      `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=RELIANCE.BSE&outputsize=full&apikey=demo`,
+    );
+
+    const raw = result.data["Time Series (Daily)"] as Record<
+      string,
+      WeeklyCandle
+    >;
+    const priceSeries = Object.entries(raw).map(([date, values]) => ({
+      date,
+      price: Number(values["4. close"]),
+    }));
+    if (size == "7days") {
+      const response = priceSeries.slice(0, 7);
+      return res.json({ response });
+    } else if (size == "30days") {
+      const response = priceSeries.slice(0, 30);
+      return res.json({ response });
+    }
+    console.log(priceSeries);
+    return res.json({ priceSeries });
+  } catch (error: any) {
+    console.error("Axios error:", error.response?.data || error.message);
+  }
+}
+
 export async function cryptomarket(req: Request, res: Response) {
   const symbol = req.query.symbol;
   const market = req.query.market;

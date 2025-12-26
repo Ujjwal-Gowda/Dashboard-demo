@@ -16,6 +16,8 @@ import {
 import { TableDemo } from "../components/table/page";
 import { useTable } from "../hooks/tablehook";
 import { useState } from "react";
+import { useChartData } from "../hooks/useChartData";
+import { ChartAreaInteractive } from "../components/area-chart";
 export interface CryptoRow {
   date: string;
   open: number;
@@ -41,6 +43,10 @@ export default function CryptoMarketPage() {
     endpoint: "http://localhost:5000/api/market/crypto",
     params: { symbol: selectCoin, market: selectMarket },
   });
+  const { data: coinHistory, loading } = useChartData(
+    "http://localhost:5000/api/crypto/weekly",
+    { coin: selectCoin, CUR: selectMarket },
+  );
 
   return (
     <div className="flex flex-col gap-6">
@@ -53,7 +59,6 @@ export default function CryptoMarketPage() {
           Explore cryptocurrency prices, trends, and volume
         </p>
       </div>
-
       {/* 🔹 Controls */}
       <Card>
         <CardHeader>
@@ -120,9 +125,7 @@ export default function CryptoMarketPage() {
           </div>
         </CardContent>
       </Card>
-
       {/* 🔹 Market Table */}
-
       {selectCoin != "" && selectMarket != "" && (
         <Card>
           <CardHeader>
@@ -135,6 +138,22 @@ export default function CryptoMarketPage() {
               name={"crypto"}
             />
           </CardContent>
+        </Card>
+      )}
+
+      {selectCoin != "" && selectMarket != "" && (
+        <Card>
+          {loading ? (
+            <div className="p-6">Loading chart…</div>
+          ) : (
+            <div className="px-4">
+              <ChartAreaInteractive
+                title="BTC Price History"
+                description="Daily BTC price (USD)"
+                data={coinHistory}
+              />
+            </div>
+          )}
         </Card>
       )}
     </div>

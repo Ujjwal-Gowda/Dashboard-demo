@@ -16,7 +16,8 @@ import { useState } from "react";
 
 import { useTable } from "../hooks/tablehook";
 import { TableDemo } from "../components/table/page";
-
+import { useChartData } from "../hooks/useChartData";
+import { ChartAreaInteractive } from "../components/area-chart";
 export interface ForexRow {
   date: string;
   open: number;
@@ -39,6 +40,10 @@ export default function ForexPage() {
     endpoint: "http://localhost:5000/api/market/forex",
     params: { from: selectFrom, to: selectTo },
   });
+  const { data: forexHistory, loading } = useChartData(
+    "http://localhost:5000/api/market/weeklyex",
+    { from: selectFrom, to: selectTo },
+  );
   return (
     <div className="space-y-6">
       {/* 🔹 Page Header */}
@@ -117,6 +122,21 @@ export default function ForexPage() {
           <CardContent>
             <TableDemo data={tableData} loading={tableLoading} name={"forex"} />
           </CardContent>
+        </Card>
+      )}
+      {selectFrom != "" && selectTo != "" && (
+        <Card>
+          {loading ? (
+            <div className="p-6">Loading chart…</div>
+          ) : (
+            <div className="px-4">
+              <ChartAreaInteractive
+                title="forex Price History"
+                description="Daily forex price (USD)"
+                data={forexHistory}
+              />
+            </div>
+          )}
         </Card>
       )}
     </div>

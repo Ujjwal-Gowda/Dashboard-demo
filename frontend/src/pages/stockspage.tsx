@@ -15,6 +15,8 @@ import {
 } from "../components/ui/select";
 import { TableDemo } from "../components/table/page";
 import { useTable } from "../hooks/tablehook";
+import { useChartData } from "../hooks/useChartData";
+import { ChartAreaInteractive } from "../components/area-chart";
 import { useState } from "react";
 export interface stocksRow {
   date: string;
@@ -38,7 +40,10 @@ export default function StocksPage() {
     endpoint: "http://localhost:5000/api/market/stocks",
     params: { symbol: selectStock },
   });
-
+  const { data: stocksHistory, loading } = useChartData(
+    "http://localhost:5000/api/market/stockschart",
+    { symbol: selectStock },
+  );
   return (
     <div className="space-y-6">
       {/* 🔹 Page Header */}
@@ -109,6 +114,22 @@ export default function StocksPage() {
           <CardContent>
             <TableDemo data={tableData} loading={tableLoading} name="stocks" />
           </CardContent>
+        </Card>
+      )}
+
+      {selectStock != "" && (
+        <Card>
+          {loading ? (
+            <div className="p-6">Loading chart…</div>
+          ) : (
+            <div className="px-4">
+              <ChartAreaInteractive
+                title="stocks History"
+                description="Daily stocks price (USD)"
+                data={stocksHistory}
+              />
+            </div>
+          )}
         </Card>
       )}
     </div>

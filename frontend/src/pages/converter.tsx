@@ -35,12 +35,13 @@ export default function ConverterPage() {
         params: {
           from: fromSymbol,
           to: toSymbol,
-          ftype: fromType,
+          fromType: fromType,
           toType: toType,
+          amount: amount,
         },
       },
     );
-    setValue(values.data.cleanedData.rate);
+    setValue(values.data.result);
   }
   return (
     <div className="mx-auto max-w-3xl space-y-6">

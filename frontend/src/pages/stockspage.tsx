@@ -18,6 +18,7 @@ import { useTable } from "../hooks/tablehook";
 import { useChartData } from "../hooks/useChartData";
 import { ChartAreaInteractive } from "../components/area-chart";
 import { useState } from "react";
+import { useWatchlist } from "../hooks/watchlist";
 export interface stocksRow {
   date: string;
   open: number;
@@ -29,6 +30,8 @@ export interface stocksRow {
 
 export default function StocksPage() {
   const [selectStock, setStock] = useState<string>("");
+
+  const addItem = useWatchlist((s) => s.addItem);
   function resetStock() {
     setStock("");
   }
@@ -44,6 +47,29 @@ export default function StocksPage() {
     "http://localhost:5000/api/market/stockschart",
     { symbol: selectStock },
   );
+  function handleAddToWatchlist() {
+    if (!selectStock && !stocksHistory) return;
+    console.log(
+      {
+        id: `${selectStock}`,
+        name: selectStock,
+        symbol: `${selectStock}`,
+        price: tableData?.[0]?.price ?? 0,
+
+        change24h: `${Number(stocksHistory[0].price) - Number(stocksHistory[1].price)}`,
+      },
+      stocksHistory,
+    );
+    addItem({
+      id: `${selectStock}`,
+      name: selectStock,
+      symbol: `${selectStock}`,
+      price: tableData?.[0]?.price ?? 0,
+
+      change24h:
+        Number(stocksHistory[0].price) - Number(stocksHistory[1].price),
+    });
+  }
   return (
     <div className="space-y-6">
       {/* 🔹 Page Header */}
@@ -99,6 +125,10 @@ export default function StocksPage() {
             {/* Actions */}
             <Button variant="outline" onClick={resetStock}>
               Reset
+            </Button>
+
+            <Button onClick={handleAddToWatchlist} variant="outline">
+              Like
             </Button>
           </div>
         </CardContent>

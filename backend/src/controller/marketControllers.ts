@@ -63,8 +63,8 @@ export async function weeklyexchangeRates(req: Request, res: Response) {
   }
   try {
     const data = await axios.get(
-      `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=${FromCur}&to_symbol=${ToCur}&apikey=${API_KEY}`,
-      // `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=EUR&to_symbol=USD&apikey=demo`,
+      // `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=${FromCur}&to_symbol=${ToCur}&apikey=${API_KEY}`,
+      `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=EUR&to_symbol=USD&apikey=demo`,
     );
 
     const raw = data.data["Time Series FX (Daily)"] as Record<
@@ -83,7 +83,7 @@ export async function weeklyexchangeRates(req: Request, res: Response) {
       return res.json({ response });
     }
 
-    console.log(priceSeries, FromCur, ToCur);
+    console.log(priceSeries, FromCur, ToCur, "whyyyy");
     return res.json({ priceSeries });
   } catch (error: any) {
     console.error("Axios error:", error.response?.data || error.message);

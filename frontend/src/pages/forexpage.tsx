@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { useState } from "react";
-
+import { useWatchlist } from "../hooks/watchlist";
 import { useTable } from "../hooks/tablehook";
 import { TableDemo } from "../components/table/page";
 import { useChartData } from "../hooks/useChartData";
@@ -28,6 +28,8 @@ export interface ForexRow {
 export default function ForexPage() {
   const [selectFrom, setFrom] = useState<string>("");
   const [selectTo, setTo] = useState<string>("");
+
+  const addItem = useWatchlist((s) => s.addItem);
   function resetforex() {
     setFrom("");
     setTo("");
@@ -44,6 +46,30 @@ export default function ForexPage() {
     "http://localhost:5000/api/market/weeklyex",
     { from: selectFrom, to: selectTo },
   );
+
+  function handleAddToWatchlist() {
+    if ((!selectFrom && !selectTo) || !forexHistory) return;
+
+    console.log(
+      {
+        id: `${selectFrom}-${selectTo}`,
+        name: selectFrom,
+        symbol: `${selectFrom}/${selectTo}`,
+        price: tableData?.[0]?.price ?? 0,
+
+        change24h: `${Number(forexHistory[0].price) - Number(forexHistory[1].price)}`,
+      },
+      forexHistory,
+    );
+    addItem({
+      id: `${selectFrom}-${selectTo}`,
+      name: selectFrom,
+      symbol: `${selectFrom}/${selectTo}`,
+      price: tableData?.[0]?.price ?? 0,
+
+      change24h: Number(forexHistory[0].price) - Number(forexHistory[1].price),
+    });
+  }
   console.log(forexHistory);
   return (
     <div className="space-y-6">
@@ -108,6 +134,9 @@ export default function ForexPage() {
             {/* Actions */}
             <Button onClick={resetforex} variant="outline">
               Reset
+            </Button>
+            <Button onClick={handleAddToWatchlist} variant="outline">
+              Like
             </Button>
           </div>
         </CardContent>

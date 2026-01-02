@@ -26,10 +26,20 @@ export interface CryptoRow {
   price: number;
   volume: number;
 }
+
+interface WatchItem {
+  id: string;
+  name: string;
+  symbol: string;
+  price: number;
+  change24h: number;
+}
+import { useWatchlist } from "../hooks/watchlist.ts";
+
 export default function CryptoMarketPage() {
   const [selectCoin, setSelectCoin] = useState<string>("");
   const [selectMarket, setSelectMarket] = useState<string>("");
-
+  const addItem = useWatchlist((s) => s.addItem);
   function resetClicked() {
     setSelectCoin("");
     setSelectMarket("");
@@ -48,6 +58,23 @@ export default function CryptoMarketPage() {
     { coin: selectCoin, CUR: selectMarket },
   );
 
+  function handleAddToWatchlist() {
+    if (!selectCoin && !selectMarket && !coinHistory) return;
+    console.log({
+      id: `${selectCoin}-${selectMarket}`,
+      name: selectCoin,
+      symbol: `${selectCoin}/${selectMarket}`,
+      price: tableData?.[0]?.price ?? 0,
+      change24h: `${Number(coinHistory[0].price) - Number(coinHistory[1].price)}`,
+    });
+    addItem({
+      id: `${selectCoin}-${selectMarket}`,
+      name: selectCoin,
+      symbol: `${selectCoin}/${selectMarket}`,
+      price: tableData?.[0]?.price ?? 0,
+      change24h: Number(coinHistory[0].price) - Number(coinHistory[1].price),
+    });
+  }
   return (
     <div className="flex flex-col gap-6">
       {/* 🔹 Page Header */}
@@ -120,6 +147,9 @@ export default function CryptoMarketPage() {
             <div className="flex gap-2 md:justify-end">
               <Button variant="outline" onClick={resetClicked}>
                 Reset
+              </Button>
+              <Button onClick={handleAddToWatchlist} variant="outline">
+                Like
               </Button>
             </div>
           </div>

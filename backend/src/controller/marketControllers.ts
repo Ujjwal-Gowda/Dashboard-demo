@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import axios from "axios";
 import dotenv from "dotenv";
 import { number } from "zod";
+import { MarketModel } from "../model/modals";
 dotenv.config();
 const API_KEY = process.env.SECRET_KEY;
 type WeeklyCandle = {
@@ -11,15 +12,28 @@ type WeeklyCandle = {
   "4. close": string;
   "5. volume": string;
 };
+
 export async function exchangeRates(req: Request, res: Response) {
   const FromCur = req.query.from;
   const ToCur = req.query.to;
-  const size = req.query.size;
   console.log("hit");
   if (!FromCur || !ToCur) {
     return res.status(400).json({ error: "missing field" });
   }
   try {
+    const cached = await MarketModel.findOne({
+      assetType: "forex",
+      symbol: `${FromCur} ${ToCur}`,
+      market: "global",
+      timeframe: "daily",
+    });
+    if (
+      cached &&
+      Date.now() - cached.fetchedAt.getTime() <= 12 * 60 * 60 * 1000
+    ) {
+      console.log("cache", cached);
+      return res.status(200).json({ data: cached.data });
+    }
     const result = await axios.get(
       // `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=${FromCur}&to_symbol=${ToCur}&apikey=${API_KEY}`,
       `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=EUR&to_symbol=USD&apikey=demo`,
@@ -37,15 +51,23 @@ export async function exchangeRates(req: Request, res: Response) {
       low: Number(values["3. low"]),
       price: Number(values["4. close"]),
     }));
-    if (size == "7days") {
-      const response = data.slice(0, 7);
-      return res.json({ response });
-    } else if (size == "30days") {
-      const response = data.slice(0, 30);
-      return res.json({ response });
-    }
 
-    console.log(data, FromCur, ToCur);
+    await MarketModel.findOneAndUpdate(
+      {
+        assetType: "forex",
+        symbol: `${FromCur} ${ToCur}`,
+        market: "global",
+        timeframe: "daily",
+      },
+      {
+        data: data,
+        source: "alphavantage",
+        fetchedAt: new Date(),
+      },
+      { upsert: true },
+    );
+
+    console.log("data", data, FromCur, ToCur);
     return res.json({ data });
   } catch (error: any) {
     console.error("Axios error:", error.response?.data || error.message);
@@ -62,6 +84,19 @@ export async function weeklyexchangeRates(req: Request, res: Response) {
     return res.status(400).json({ error: "missing field" });
   }
   try {
+    const cached = await MarketModel.findOne({
+      assetType: "forex",
+      symbol: `${FromCur} ${ToCur}`,
+      market: "global",
+      timeframe: "weekly",
+    });
+    if (
+      cached &&
+      Date.now() - cached.fetchedAt.getTime() <= 12 * 60 * 60 * 1000
+    ) {
+      console.log("cache", cached);
+      return res.status(200).json({ priceSeries: cached.data });
+    }
     const data = await axios.get(
       // `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=${FromCur}&to_symbol=${ToCur}&apikey=${API_KEY}`,
       `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=EUR&to_symbol=USD&apikey=demo`,
@@ -75,13 +110,21 @@ export async function weeklyexchangeRates(req: Request, res: Response) {
       date,
       price: Number(values["4. close"]),
     }));
-    if (size == "7days") {
-      const response = priceSeries.slice(0, 7);
-      return res.json({ response });
-    } else if (size == "30days") {
-      const response = priceSeries.slice(0, 30);
-      return res.json({ response });
-    }
+
+    await MarketModel.findOneAndUpdate(
+      {
+        assetType: "forex",
+        symbol: `${FromCur} ${ToCur}`,
+        market: "global",
+        timeframe: "weekly",
+      },
+      {
+        data: priceSeries,
+        source: "alphavantage",
+        fetchedAt: new Date(),
+      },
+      { upsert: true },
+    );
 
     console.log(priceSeries, FromCur, ToCur, "whyyyy");
     return res.json({ priceSeries });
@@ -89,6 +132,7 @@ export async function weeklyexchangeRates(req: Request, res: Response) {
     console.error("Axios error:", error.response?.data || error.message);
   }
 }
+
 export async function stocksinfo(req: Request, res: Response) {
   const symbol = req.query.symbol;
 
@@ -97,6 +141,20 @@ export async function stocksinfo(req: Request, res: Response) {
     return res.status(400).json({ error: "missing field" });
   }
   try {
+    const cached = await MarketModel.findOne({
+      assetType: "stocks",
+      symbol: symbol,
+      market: "global",
+      timeframe: "daily",
+    });
+    if (
+      cached &&
+      Date.now() - cached.fetchedAt.getTime() <= 12 * 60 * 60 * 1000
+    ) {
+      console.log("cache", cached);
+      return res.status(200).json({ data: cached.data });
+    }
+
     const result = await axios.get(
       // `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=RELIANCE.BSE&outputsize=compact&apikey=demo`,
       `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=RELIANCE.BSE&outputsize=full&apikey=demo`,
@@ -114,13 +172,22 @@ export async function stocksinfo(req: Request, res: Response) {
       price: Number(values["4. close"]),
       volume: Number(values["5. volume"]),
     }));
-    if (size == "7days") {
-      const response = data.slice(0, 7);
-      return res.json({ response });
-    } else if (size == "30days") {
-      const response = data.slice(0, 30);
-      return res.json({ response });
-    }
+
+    await MarketModel.findOneAndUpdate(
+      {
+        assetType: "stocks",
+        symbol: symbol,
+        market: "global",
+        timeframe: "daily",
+      },
+      {
+        data: data,
+        source: "alphavantage",
+        fetchedAt: new Date(),
+      },
+      { upsert: true },
+    );
+
     console.log(data);
     return res.json({ data });
   } catch (error: any) {
@@ -136,6 +203,20 @@ export async function stockschart(req: Request, res: Response) {
     return res.status(400).json({ error: "missing field" });
   }
   try {
+    const cached = await MarketModel.findOne({
+      assetType: "stocks",
+      symbol: symbol,
+      market: "global",
+      timeframe: "weekly",
+    });
+    if (
+      cached &&
+      Date.now() - cached.fetchedAt.getTime() <= 12 * 60 * 60 * 1000
+    ) {
+      console.log("cache", cached);
+      return res.status(200).json({ priceSeries: cached.data });
+    }
+
     const result = await axios.get(
       // `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=RELIANCE.BSE&outputsize=compact&apikey=demo`,
       `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=RELIANCE.BSE&outputsize=full&apikey=demo`,
@@ -149,13 +230,22 @@ export async function stockschart(req: Request, res: Response) {
       date,
       price: Number(values["4. close"]),
     }));
-    if (size == "7days") {
-      const response = priceSeries.slice(0, 7);
-      return res.json({ response });
-    } else if (size == "30days") {
-      const response = priceSeries.slice(0, 30);
-      return res.json({ response });
-    }
+
+    await MarketModel.findOneAndUpdate(
+      {
+        assetType: "stocks",
+        symbol: symbol,
+        market: "global",
+        timeframe: "weekly",
+      },
+      {
+        data: priceSeries,
+        source: "alphavantage",
+        fetchedAt: new Date(),
+      },
+      { upsert: true },
+    );
+
     console.log(priceSeries);
     return res.json({ priceSeries });
   } catch (error: any) {
@@ -171,6 +261,20 @@ export async function cryptomarket(req: Request, res: Response) {
     return res.status(400).json({ error: "missing field" });
   }
   try {
+    const cached = await MarketModel.findOne({
+      assetType: "crypto",
+      symbol: symbol,
+      market: market,
+      timeframe: "daily",
+    });
+    if (
+      cached &&
+      Date.now() - cached.fetchedAt.getTime() <= 12 * 60 * 60 * 1000
+    ) {
+      console.log("cache", cached);
+      return res.status(200).json({ data: cached.data });
+    }
+
     const result = await axios.get(
       // `https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=${symbol}&market=${market}&apikey=${API_KEY}`,
       `https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=EUR&apikey=demo`,
@@ -189,13 +293,22 @@ export async function cryptomarket(req: Request, res: Response) {
       price: Number(values["4. close"]),
       volume: Number(values["5. volume"]),
     }));
-    if (size == "7days") {
-      const response = data.slice(0, 7);
-      return res.json({ response });
-    } else if (size == "30days") {
-      const response = data.slice(0, 30);
-      return res.json({ response });
-    }
+
+    await MarketModel.findOneAndUpdate(
+      {
+        assetType: "crypto",
+        symbol: symbol,
+        market: market,
+        timeframe: "daily",
+      },
+      {
+        data: data,
+        source: "alphavantage",
+        fetchedAt: new Date(),
+      },
+      { upsert: true },
+    );
+
     console.log(data);
     return res.json({ data });
   } catch (error: any) {

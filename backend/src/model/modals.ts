@@ -51,4 +51,8 @@ MarketSeriesSchema.index(
   { unique: true },
 );
 
+MarketSeriesSchema.index(
+  { fetchedAt: 1 },
+  { expireAfterSeconds: 12 * 60 * 60 },
+);
 export const MarketModel = mongoose.model("MarketModel", MarketSeriesSchema);

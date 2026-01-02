@@ -7,7 +7,7 @@ import serviceRoutes from "./routes/serviceroutes";
 const app = express();
 
 app.use(cors());
-// Connectiondb();
+Connectiondb();
 app.use("/api/crypto", cryptoRoutes);
 app.use("/api/market", marketRoutes);
 app.use("/api/service", serviceRoutes);

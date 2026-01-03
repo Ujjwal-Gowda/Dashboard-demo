@@ -40,10 +40,10 @@ export function AppSidebar() {
       <SidebarHeader className="p-4">
         <div className="flex items-center gap-3">
           <Avatar className="h-9 w-9">
-            <AvatarFallback>UG</AvatarFallback>
+            <AvatarFallback>U</AvatarFallback>
           </Avatar>
           <div className="flex flex-col truncate">
-            <span className="text-sm font-semibold">Ujjwal</span>
+            <span className="text-sm font-semibold">User</span>
             <span className="text-xs text-muted-foreground">Developer</span>
           </div>
         </div>

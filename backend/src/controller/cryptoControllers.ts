@@ -1,6 +1,7 @@
 import { json, Request, Response } from "express";
 import dotenv from "dotenv";
 import axios from "axios";
+import { MarketModel } from "../model/modals";
 import { number } from "zod";
 dotenv.config();
 const COINPAPRIKA_URL = "https://api.coinpaprika.com/v1/tickers";
@@ -51,6 +52,7 @@ export async function cryptoinfo(req: Request, res: Response) {
       ask: Number(raw["9. Ask Price"]),
       lastUpdated: raw["6. Last Refreshed"],
     };
+
     console.log(cleanedData);
     return res.json({ cleanedData });
   } catch (error) {
@@ -65,6 +67,19 @@ export async function chartweekly(req: Request, res: Response) {
     return res.status(400).json({ error: "missing field" });
   }
   try {
+    const cached = await MarketModel.findOne({
+      assetType: "forex",
+      symbol: `${currency} ${COIN}`,
+      market: "global",
+      timeframe: "weekly",
+    });
+    if (
+      cached &&
+      Date.now() - cached.fetchedAt.getTime() <= 12 * 60 * 60 * 1000
+    ) {
+      console.log("cache", cached);
+      return res.status(200).json({ priceSeries: cached.data });
+    }
     const data = await axios.get(
       // `https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_WEEKLY&symbol=${COIN}&market=${currency}&apikey=${API_KEY}`,
       "https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_WEEKLY&symbol=BTC&market=EUR&apikey=demo",
@@ -86,6 +101,22 @@ export async function chartweekly(req: Request, res: Response) {
     }));
 
     priceSeries.reverse();
+
+    await MarketModel.findOneAndUpdate(
+      {
+        assetType: "forex",
+        symbol: `${currency} ${COIN}`,
+        market: "global",
+        timeframe: "weekly",
+      },
+      {
+        data: priceSeries,
+        source: "alphavantage",
+        fetchedAt: new Date(),
+      },
+      { upsert: true },
+    );
+
     console.log(data, priceSeries);
     return res.json({ priceSeries });
   } catch (error: any) {
@@ -96,6 +127,7 @@ export async function chartweekly(req: Request, res: Response) {
     });
   }
 }
+
 export async function gainlosers(req: Request, res: Response) {
   try {
     const coins = [
@@ -115,6 +147,20 @@ export async function gainlosers(req: Request, res: Response) {
       change: number;
       price: number;
     }[] = [];
+
+    const cached = await MarketModel.findOne({
+      assetType: "crypto",
+      symbol: `Gainers Losers`,
+      market: "global",
+      timeframe: "daily",
+    });
+    if (
+      cached &&
+      Date.now() - cached.fetchedAt.getTime() <= 12 * 60 * 60 * 1000
+    ) {
+      console.log("cache", cached);
+      return res.status(200).json({ data: cached.data });
+    }
     for (let coin of coins) {
       const data = await axios.get(
         // `https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=${coin}&market=EUR&apikey=${API_KEY}`,
@@ -146,13 +192,31 @@ export async function gainlosers(req: Request, res: Response) {
     }
     results.sort((a, b) => b.change - a.change);
 
-    return res.json({
+    const data = {
       gainers: results.filter((c) => c.change > 0).slice(0, 5),
       losers: results.filter((c) => c.change < 0).slice(-5),
       all: results,
       market: "EUR",
       updatedAt: new Date().toISOString(),
-    });
+    };
+
+    await MarketModel.findOneAndUpdate(
+      {
+        assetType: "forex",
+
+        symbol: `Gainers Losers`,
+        market: "global",
+        timeframe: "daily",
+      },
+      {
+        data: data,
+        source: "alphavantage",
+        fetchedAt: new Date(),
+      },
+      { upsert: true },
+    );
+
+    return res.json({ data });
   } catch (error: any) {
     console.error("Axios error:", error.response?.data || error.message);
     return res.status(500).json({
@@ -196,6 +260,19 @@ export async function curexchangee(req: Request, res: Response) {
     return res.status(400).json({ error: "missing field" });
   }
   try {
+    const cached = await MarketModel.findOne({
+      assetType: "forex",
+      symbol: `currency exchange`,
+      market: "global",
+      timeframe: "daily",
+    });
+    if (
+      cached &&
+      Date.now() - cached.fetchedAt.getTime() <= 12 * 60 * 60 * 1000
+    ) {
+      console.log("cache", cached);
+      return res.status(200).json({ cleaned: cached.data });
+    }
     const data = await axios.get(
       // `https://www.alphavantage.co/query?function=fx_daily&from_symbol=${fromcur}&to_symbol=${tocur}&apikey=${api_key}`,
 
@@ -207,6 +284,22 @@ export async function curexchangee(req: Request, res: Response) {
       from: "EUR",
       to: raw[tocurr as string],
     };
+
+    await MarketModel.findOneAndUpdate(
+      {
+        assetType: "forex",
+
+        symbol: `currency exchange`,
+        market: "global",
+        timeframe: "daily",
+      },
+      {
+        data: cleaned,
+        source: "alphavantage",
+        fetchedAt: new Date(),
+      },
+      { upsert: true },
+    );
 
     console.log(raw, cleaned, tocurr);
     return res.json({ cleaned });
@@ -227,6 +320,19 @@ export const getCryptoTable = async (req: Request, res: Response) => {
       search?: string;
     };
 
+    const cached = await MarketModel.findOne({
+      assetType: "crypto",
+      symbol: `crypto table`,
+      market: "global",
+      timeframe: "daily",
+    });
+    if (
+      cached &&
+      Date.now() - cached.fetchedAt.getTime() <= 12 * 60 * 60 * 1000
+    ) {
+      console.log("cache", cached);
+      return res.status(200).json({ cleaned: cached.data });
+    }
     const response = await axios.get(COINPAPRIKA_URL);
     let data = response.data;
 
@@ -255,14 +361,30 @@ export const getCryptoTable = async (req: Request, res: Response) => {
       circulatingSupply: coin.circulating_supply,
     }));
 
-    res.json({
+    const cleaned = {
       meta: {
         page: Number(page),
         limit: Number(limit),
         total: data.length,
       },
       data: tableData,
-    });
+    };
+    await MarketModel.findOneAndUpdate(
+      {
+        assetType: "forex",
+        symbol: `crypto table`,
+        market: "global",
+        timeframe: "daily",
+      },
+      {
+        data: cleaned,
+        source: "alphavantage",
+        fetchedAt: new Date(),
+      },
+      { upsert: true },
+    );
+    console.log(cleaned);
+    res.json({ cleaned });
   } catch (error) {
     console.error("CoinPaprika fetch failed", error);
     res.status(500).json({ message: "Failed to fetch crypto data" });

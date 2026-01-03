@@ -31,7 +31,7 @@ export function useTable<T>({
           signal: controller.signal,
         });
 
-        const result = res.data.data;
+        const result = res.data.cleaned.data;
         setData(result);
       } catch (err: any) {
         if (err.name !== "CanceledError") {

@@ -61,38 +61,38 @@ function useCryptoPrice(coin: string) {
   return { price, loading };
 }
 
-// function useEthereumPrice(coin: string) {
-//   const [price, setPrice] = useState<number | null>(null);
-//   const [loading, setLoading] = useState(true);
-//
-//   useEffect(() => {
-//     let mounted = true;
-//
-//     async function fetchPrice() {
-//       try {
-//         const res = await axios.get("http://localhost:5000/api/crypto/finage", {
-//           params: { coin },
-//         });
-//
-//         if (mounted) {
-//           setPrice(res.data.cleanedData.price);
-//         }
-//       } catch (err) {
-//         console.error(`${coin} price fetch failed`, err);
-//       } finally {
-//         mounted && setLoading(false);
-//       }
-//     }
-//
-//     fetchPrice();
-//
-//     return () => {
-//       mounted = false;
-//     };
-//   }, [coin]);
-//
-//   return { price, loading };
-// }
+function useEthereumPrice(coin: string) {
+  const [price, setPrice] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function fetchPrice() {
+      try {
+        const res = await axios.get("http://localhost:5000/api/crypto/finage", {
+          params: { coin },
+        });
+
+        if (mounted) {
+          setPrice(res.data.cleanedData.price);
+        }
+      } catch (err) {
+        console.error(`${coin} price fetch failed`, err);
+      } finally {
+        mounted && setLoading(false);
+      }
+    }
+
+    fetchPrice();
+
+    return () => {
+      mounted = false;
+    };
+  }, [coin]);
+
+  return { price, loading };
+}
 
 function useCurrencyPrice(curr: string) {
   const [price, setPrice] = useState<number | null>(null);
@@ -161,7 +161,7 @@ function useMarketOpen() {
 
 export default function HomePage() {
   const { price: btcPrice } = useCryptoPrice("BTC");
-  // const { price: ethPrice } = useEthereumPrice("ethusd");
+  const { price: ethPrice } = useEthereumPrice("ethusd");
 
   const { price: currencyprice } = useCurrencyPrice("usd");
   const { marketOp: marketOpen } = useMarketOpen();
@@ -170,11 +170,11 @@ export default function HomePage() {
     "http://localhost:5000/api/crypto/weekly",
     { coin: "BTC", CUR: "EUR" },
   );
-  // const { data: exchangeHis } = useChartData(
-  //   "http://localhost:5000/api/market/weeklyex",
-  //   { from: "USD", to: "INR" },
-  // );
-  // console.log("exchange", exchangeHis);
+  const { data: exchangeHis } = useChartData(
+    "http://localhost:5000/api/market/weeklyex",
+    { from: "USD", to: "INR" },
+  );
+  console.log("exchange", exchangeHis);
   const {
     data: tableData,
     loading: tableLoading,
@@ -188,23 +188,23 @@ export default function HomePage() {
     <div className="space-y-6">
       {/* KPI Cards */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* <KPICard */}
-        {/*   title="BTC Price" */}
-        {/*   value={btcPrice ? `$${btcPrice}` : "—"} */}
-        {/*   icon={BarChart3} */}
-        {/* /> */}
-        {/**/}
-        {/* <KPICard */}
-        {/*   title="ETH Price" */}
-        {/*   // value={ethPrice ? `$${ethPrice}` : "—"} */}
-        {/*   icon={Users} */}
-        {/* /> */}
-        {/**/}
-        {/* <KPICard */}
-        {/*   title="EUR To USD" */}
-        {/*   value={"1EUR = " + currencyprice + "USD"} */}
-        {/*   icon={Rocket} */}
-        {/* /> */}
+        <KPICard
+          title="BTC Price"
+          value={btcPrice ? `$${btcPrice}` : "—"}
+          icon={BarChart3}
+        />
+
+        <KPICard
+          title="ETH Price"
+          value={ethPrice ? `$${ethPrice}` : "—"}
+          icon={Users}
+        />
+
+        <KPICard
+          title="EUR To USD"
+          value={"1EUR = " + currencyprice + "USD"}
+          icon={Rocket}
+        />
 
         <KPICard
           title="Market Status"
@@ -214,33 +214,32 @@ export default function HomePage() {
         />
       </div>
 
-      {/* Chart */}
-      {/* <Card> */}
-      {/*   {loading ? ( */}
-      {/*     <div className="p-6">Loading chart…</div> */}
-      {/*   ) : ( */}
-      {/*     <div className="px-4"> */}
-      {/*       <ChartAreaInteractive */}
-      {/*         title="BTC Price History" */}
-      {/*         description="Daily BTC price (USD)" */}
-      {/*         data={btcHistory} */}
-      {/*       /> */}
-      {/*     </div> */}
-      {/*   )} */}
-      {/* </Card> */}
-      {/* <Card> */}
-      {/*   {loading ? ( */}
-      {/*     <div className="p-6">Loading chart…</div> */}
-      {/*   ) : ( */}
-      {/*     <div className="px-4"> */}
-      {/*       <ChartAreaInteractive */}
-      {/*         title="BTC Price History" */}
-      {/*         description="Daily BTC price (USD)" */}
-      {/*         data={exchangeHis} */}
-      {/*       /> */}
-      {/*     </div> */}
-      {/*   )} */}
-      {/* </Card> */}
+      <Card>
+        {loading ? (
+          <div className="p-6">Loading chart…</div>
+        ) : (
+          <div className="px-4">
+            <ChartAreaInteractive
+              title="BTC Price History"
+              description="Daily BTC price (USD)"
+              data={btcHistory}
+            />
+          </div>
+        )}
+      </Card>
+      <Card>
+        {loading ? (
+          <div className="p-6">Loading chart…</div>
+        ) : (
+          <div className="px-4">
+            <ChartAreaInteractive
+              title="CURRENCY Exchange"
+              description="USD To INR"
+              data={exchangeHis}
+            />
+          </div>
+        )}
+      </Card>
       {/* Tables */}
       <div className="">
         <Card>

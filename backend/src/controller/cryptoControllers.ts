@@ -330,8 +330,8 @@ export const getCryptoTable = async (req: Request, res: Response) => {
       cached &&
       Date.now() - cached.fetchedAt.getTime() <= 12 * 60 * 60 * 1000
     ) {
-      console.log("cache", cached);
-      return res.status(200).json({ cleaned: cached.data });
+      console.log("cache", cached.data);
+      return res.status(200).json({ data: cached.data });
     }
     const response = await axios.get(COINPAPRIKA_URL);
     let data = response.data;
@@ -371,20 +371,20 @@ export const getCryptoTable = async (req: Request, res: Response) => {
     };
     await MarketModel.findOneAndUpdate(
       {
-        assetType: "forex",
+        assetType: "crypto",
         symbol: `crypto table`,
         market: "global",
         timeframe: "daily",
       },
       {
-        data: cleaned,
+        data: cleaned.data,
         source: "alphavantage",
         fetchedAt: new Date(),
       },
       { upsert: true },
     );
-    console.log(cleaned);
-    res.json({ cleaned });
+    console.log(cleaned.data);
+    res.json({ data: cleaned.data });
   } catch (error) {
     console.error("CoinPaprika fetch failed", error);
     res.status(500).json({ message: "Failed to fetch crypto data" });

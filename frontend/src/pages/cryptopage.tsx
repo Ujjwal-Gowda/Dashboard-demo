@@ -13,11 +13,15 @@ import {
   SelectItem,
   SelectValue,
 } from "../components/ui/select";
+import { ToastContainer, toast, Bounce } from "react-toastify";
 import { TableDemo } from "../components/table/page";
 import { useTable } from "../hooks/tablehook";
 import { useState } from "react";
 import { useChartData } from "../hooks/useChartData";
 import { ChartAreaInteractive } from "../components/area-chart";
+import { useThemeStore } from "../hooks/usetheme.ts";
+import { BookmarkIcon } from "lucide-react";
+import { Toggle } from "../components/ui/toggle";
 export interface CryptoRow {
   date: string;
   open: number;
@@ -40,6 +44,15 @@ export default function CryptoMarketPage() {
   const [selectCoin, setSelectCoin] = useState<string>("");
   const [selectMarket, setSelectMarket] = useState<string>("");
   const addItem = useWatchlist((s) => s.addItem);
+  const fetchedTheme = useThemeStore((s) => s.theme);
+  let theme = "";
+  if (fetchedTheme == "light") {
+    theme = "dark";
+  } else if (fetchedTheme == "dark") {
+    theme = "light";
+  } else {
+    theme = "light";
+  }
   function resetClicked() {
     setSelectCoin("");
     setSelectMarket("");
@@ -74,7 +87,20 @@ export default function CryptoMarketPage() {
       price: tableData?.[0]?.price ?? 0,
       change24h: Number(coinHistory[0].price) - Number(coinHistory[1].price),
     });
+    liked();
   }
+  const liked = () =>
+    toast.success("Added to Watchlist", {
+      position: "bottom-right",
+      autoClose: 5000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: theme,
+      transition: Bounce,
+    });
   return (
     <div className="flex flex-col gap-6">
       {/* 🔹 Page Header */}
@@ -148,9 +174,21 @@ export default function CryptoMarketPage() {
               <Button variant="outline" onClick={resetClicked}>
                 Reset
               </Button>
-              <Button onClick={handleAddToWatchlist} variant="outline">
-                Like
-              </Button>
+              {coinHistory && (
+                <div>
+                  <Toggle
+                    onClick={handleAddToWatchlist}
+                    aria-label="Toggle bookmark"
+                    size="sm"
+                    variant="outline"
+                    className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-blue-500 data-[state=on]:*:[svg]:stroke-blue-500"
+                  >
+                    <BookmarkIcon />
+                    Bookmark
+                  </Toggle>
+                  <ToastContainer />
+                </div>
+              )}
             </div>
           </div>
         </CardContent>

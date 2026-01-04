@@ -19,6 +19,10 @@ import { useChartData } from "../hooks/useChartData";
 import { ChartAreaInteractive } from "../components/area-chart";
 import { useState } from "react";
 import { useWatchlist } from "../hooks/watchlist";
+import { BookmarkIcon } from "lucide-react";
+import { toast, Bounce, ToastContainer } from "react-toastify";
+import { Toggle } from "../components/ui/toggle";
+import { useThemeStore } from "../hooks/usetheme";
 export interface stocksRow {
   date: string;
   open: number;
@@ -34,6 +38,16 @@ export default function StocksPage() {
   const addItem = useWatchlist((s) => s.addItem);
   function resetStock() {
     setStock("");
+  }
+
+  const fetchedTheme = useThemeStore((s) => s.theme);
+  let theme = "";
+  if (fetchedTheme == "light") {
+    theme = "dark";
+  } else if (fetchedTheme == "dark") {
+    theme = "light";
+  } else {
+    theme = "light";
   }
   const {
     data: tableData,
@@ -69,7 +83,21 @@ export default function StocksPage() {
       change24h:
         Number(stocksHistory[0].price) - Number(stocksHistory[1].price),
     });
+    liked();
   }
+
+  const liked = () =>
+    toast.success("Added to Watchlist", {
+      position: "bottom-right",
+      autoClose: 5000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: theme,
+      transition: Bounce,
+    });
   return (
     <div className="space-y-6">
       {/* 🔹 Page Header */}
@@ -127,9 +155,21 @@ export default function StocksPage() {
               Reset
             </Button>
 
-            <Button onClick={handleAddToWatchlist} variant="outline">
-              Like
-            </Button>
+            {stocksHistory && (
+              <div>
+                <Toggle
+                  onClick={handleAddToWatchlist}
+                  aria-label="Toggle bookmark"
+                  size="sm"
+                  variant="outline"
+                  className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-blue-500 data-[state=on]:*:[svg]:stroke-blue-500"
+                >
+                  <BookmarkIcon />
+                  Bookmark
+                </Toggle>
+                <ToastContainer />
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

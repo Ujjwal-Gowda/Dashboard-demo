@@ -1,41 +1,35 @@
 import mongoose from "mongoose";
-import { string } from "zod";
-import { required } from "zod/mini";
 
 const PricePointSchema = new mongoose.Schema({
-  date: { type: string, required: true },
+  date: { type: String, required: true },
   price: { type: Number, required: true },
-
-  open: { type: string },
-  high: { type: string },
-  low: { type: string },
-  close: { type: string },
-  volume: { type: string },
+  open: { type: Number },
+  high: { type: Number },
+  low: { type: Number },
+  close: { type: Number },
+  volume: { type: Number },
 });
 
 const MarketSeriesSchema = new mongoose.Schema(
   {
     assetType: {
-      type: string,
+      type: String,
       required: true,
       enum: ["crypto", "stocks", "forex"],
     },
-    symbol: { type: string, required: true },
-    data: { PricePointSchema },
-    market: { type: string },
-
+    symbol: { type: String, required: true },
+    data: [PricePointSchema],
+    market: { type: String },
     timeframe: {
       type: String,
       enum: ["daily", "weekly"],
       required: true,
     },
-
     source: {
       type: String,
       enum: ["alphavantage", "finage"],
       required: true,
     },
-
     fetchedAt: { type: Date, default: Date.now },
   },
   { timestamps: true },

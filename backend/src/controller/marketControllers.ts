@@ -35,8 +35,8 @@ export async function exchangeRates(req: Request, res: Response) {
       return res.status(200).json({ data: cached.data });
     }
     const result = await axios.get(
-      // `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=${FromCur}&to_symbol=${ToCur}&apikey=${API_KEY}`,
-      `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=EUR&to_symbol=USD&apikey=demo`,
+      `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=${FromCur}&to_symbol=${ToCur}&apikey=${API_KEY}`,
+      // `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=EUR&to_symbol=USD&apikey=demo`,
     );
 
     const raw = result.data["Time Series FX (Daily)"] as Record<
@@ -98,8 +98,8 @@ export async function weeklyexchangeRates(req: Request, res: Response) {
       return res.status(200).json({ priceSeries: cached.data });
     }
     const data = await axios.get(
-      // `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=${FromCur}&to_symbol=${ToCur}&apikey=${API_KEY}`,
-      `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=EUR&to_symbol=USD&apikey=demo`,
+      `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=${FromCur}&to_symbol=${ToCur}&apikey=${API_KEY}`,
+      // `https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=EUR&to_symbol=USD&apikey=demo`,
     );
 
     const raw = data.data["Time Series FX (Daily)"] as Record<
@@ -156,8 +156,8 @@ export async function stocksinfo(req: Request, res: Response) {
     }
 
     const result = await axios.get(
-      // `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=RELIANCE.BSE&outputsize=compact&apikey=demo`,
-      `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=RELIANCE.BSE&outputsize=full&apikey=demo`,
+      `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&outputsize=full&apikey=${API_KEY}`,
+      // `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=RELIANCE.BSE&outputsize=full&apikey=demo`,
     );
 
     const raw = result.data["Time Series (Daily)"] as Record<
@@ -219,7 +219,8 @@ export async function stockschart(req: Request, res: Response) {
 
     const result = await axios.get(
       // `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=RELIANCE.BSE&outputsize=compact&apikey=demo`,
-      `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=RELIANCE.BSE&outputsize=full&apikey=demo`,
+      // `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=RELIANCE.BSE&outputsize=full&apikey=demo`,
+      `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&outputsize=full&apikey=${API_KEY}`,
     );
 
     const raw = result.data["Time Series (Daily)"] as Record<
@@ -276,8 +277,8 @@ export async function cryptomarket(req: Request, res: Response) {
     }
 
     const result = await axios.get(
-      // `https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=${symbol}&market=${market}&apikey=${API_KEY}`,
-      `https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=EUR&apikey=demo`,
+      `https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=${symbol}&market=${market}&apikey=${API_KEY}`,
+      // `https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=EUR&apikey=demo`,
     );
 
     const raw = result.data["Time Series (Digital Currency Daily)"] as Record<

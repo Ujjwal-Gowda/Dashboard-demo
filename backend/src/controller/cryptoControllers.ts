@@ -81,8 +81,8 @@ export async function chartweekly(req: Request, res: Response) {
       return res.status(200).json({ priceSeries: cached.data });
     }
     const data = await axios.get(
-      // `https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_WEEKLY&symbol=${COIN}&market=${currency}&apikey=${API_KEY}`,
-      "https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_WEEKLY&symbol=BTC&market=EUR&apikey=demo",
+      `https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_WEEKLY&symbol=${COIN}&market=${currency}&apikey=${API_KEY}`,
+      // "https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_WEEKLY&symbol=BTC&market=EUR&apikey=demo",
       {
         headers: {
           "Content-Type": "application/json",
@@ -163,8 +163,8 @@ export async function gainlosers(req: Request, res: Response) {
     }
     for (let coin of coins) {
       const data = await axios.get(
-        // `https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=${coin}&market=EUR&apikey=${API_KEY}`,
-        `https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=EUR&apikey=demo`,
+        `https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=${coin}&market=EUR&apikey=${API_KEY}`,
+        // `https://www.alphavantage.co/query?function=DIGITAL_CURRENCY_DAILY&symbol=BTC&market=EUR&apikey=demo`,
 
         {
           headers: {

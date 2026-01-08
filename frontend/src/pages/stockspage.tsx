@@ -43,7 +43,6 @@ export interface stocksRow {
 
 export default function StocksPage() {
   const [selectStock, setStock] = useState<string>("");
-
   const addItem = useWatchlist((s) => s.addItem);
   function resetStock() {
     setStock("");
@@ -149,12 +148,32 @@ export default function StocksPage() {
                 <SelectTrigger className="w-44">
                   <SelectValue placeholder="Select exchange" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent
+                  position="popper"
+                  side="bottom"
+                  sideOffset={8}
+                  className="max-h-60 overflow-y-auto"
+                >
                   <SelectItem value="BSE">India (BSE)</SelectItem>
                   <SelectItem value="NSE">India (NSE)</SelectItem>
                   <SelectItem value="NASDAQ">US (NASDAQ)</SelectItem>
-                  <SelectItem value="MYSE">US (NYSE)</SelectItem>
-                  <SelectItem value="LON">UK (LSE)</SelectItem>
+                  <SelectItem value="NYSE">US (NYSE)</SelectItem>
+                  <SelectItem value="AMEX">US (AMEX)</SelectItem>
+                  <SelectItem value="LSE">UK (LSE)</SelectItem>
+                  <SelectItem value="XETRA">Germany (XETRA)</SelectItem>
+                  <SelectItem value="FWB">Germany (Frankfurt)</SelectItem>
+                  <SelectItem value="EPA">France (Euronext Paris)</SelectItem>
+                  <SelectItem value="AMS">Netherlands (Euronext)</SelectItem>
+                  <SelectItem value="SWX">Switzerland (SIX)</SelectItem>
+                  <SelectItem value="TSE">Japan (TSE)</SelectItem>
+                  <SelectItem value="HKEX">Hong Kong (HKEX)</SelectItem>
+                  <SelectItem value="SSE">China (SSE)</SelectItem>
+                  <SelectItem value="SZSE">China (SZSE)</SelectItem>
+                  <SelectItem value="KRX">South Korea (KRX)</SelectItem>
+                  <SelectItem value="TSX">Canada (TSX)</SelectItem>
+                  <SelectItem value="ASX">Australia (ASX)</SelectItem>
+                  <SelectItem value="B3">Brazil (B3)</SelectItem>
+                  <SelectItem value="TADAWUL"></SelectItem>
                 </SelectContent>
               </Select>
             </div>

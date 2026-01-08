@@ -153,12 +153,34 @@ export default function CryptoMarketPage() {
                   <SelectValue placeholder="Select coin" />
                 </SelectTrigger>
 
-                <SelectContent>
+                <SelectContent
+                  position="popper"
+                  side="bottom"
+                  sideOffset={8}
+                  className="max-h-60 overflow-y-auto"
+                >
                   <SelectItem value="BTC">Bitcoin (BTC)</SelectItem>
                   <SelectItem value="ETH">Ethereum (ETH)</SelectItem>
                   <SelectItem value="SOL">Solana (SOL)</SelectItem>
-                  <SelectItem value="BNB">BNB</SelectItem>
-                  <SelectItem value="XRP">XRP</SelectItem>
+                  <SelectItem value="BNB">BNB (BNB)</SelectItem>
+                  <SelectItem value="XRP">XRP (XRP)</SelectItem>
+                  <SelectItem value="MATIC">Polygon (MATIC)</SelectItem>
+                  <SelectItem value="ARB">Arbitrum (ARB)</SelectItem>
+                  <SelectItem value="OP">Optimism (OP)</SelectItem>
+                  <SelectItem value="ADA">Cardano (ADA)</SelectItem>
+                  <SelectItem value="AVAX">Avalanche (AVAX)</SelectItem>
+                  <SelectItem value="DOT">Polkadot (DOT)</SelectItem>
+                  <SelectItem value="ATOM">Cosmos (ATOM)</SelectItem>
+                  <SelectItem value="NEAR">NEAR Protocol (NEAR)</SelectItem>
+                  <SelectItem value="DOGE">Dogecoin (DOGE)</SelectItem>
+                  <SelectItem value="LTC">Litecoin (LTC)</SelectItem>
+                  <SelectItem value="BCH">Bitcoin Cash (BCH)</SelectItem>
+                  <SelectItem value="USDT">Tether (USDT)</SelectItem>
+                  <SelectItem value="USDC">USD Coin (USDC)</SelectItem>
+                  <SelectItem value="DAI">Dai (DAI)</SelectItem>
+                  <SelectItem value="LINK">Chainlink (LINK)</SelectItem>
+                  <SelectItem value="UNI">Uniswap (UNI)</SelectItem>
+                  <SelectItem value="AAVE">Aave (AAVE)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -172,7 +194,6 @@ export default function CryptoMarketPage() {
                 <SelectContent>
                   <SelectItem value="USD">USD</SelectItem>
                   <SelectItem value="EUR">EUR</SelectItem>
-                  <SelectItem value="INR">INR</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -3,11 +3,11 @@ import mongoose from "mongoose";
 const PricePointSchema = new mongoose.Schema({
   date: { type: String, required: true },
   price: { type: Number, required: true },
-  open: { type: Number },
-  high: { type: Number },
-  low: { type: Number },
-  close: { type: Number },
-  volume: { type: Number },
+  open: { type: String },
+  high: { type: String },
+  low: { type: String },
+  close: { type: String },
+  volume: { type: String },
 });
 
 const MarketSeriesSchema = new mongoose.Schema(
@@ -18,7 +18,7 @@ const MarketSeriesSchema = new mongoose.Schema(
       enum: ["crypto", "stocks", "forex"],
     },
     symbol: { type: String, required: true },
-    data: [PricePointSchema],
+    data: { PricePointSchema },
     market: { type: String },
     timeframe: {
       type: String,

@@ -32,7 +32,6 @@ import { exportToCSV, exportToJSON } from "../lib/exportutils";
 import { Download } from "lucide-react";
 import { BookmarkIcon } from "lucide-react";
 import { useThemeStore } from "../hooks/usetheme";
-import { fromTheme } from "tailwind-merge";
 export interface ForexRow {
   date: string;
   open: number;
@@ -137,15 +136,48 @@ export default function ForexPage() {
                 <SelectTrigger className="w-32">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="USD">USD</SelectItem>
-                  <SelectItem value="EUR">EUR</SelectItem>
-                  <SelectItem value="GBP">GBP</SelectItem>
-                  <SelectItem value="JPY">JPY</SelectItem>
-                  <SelectItem value="AUD">AUD</SelectItem>
-                  <SelectItem value="CAD">CAD</SelectItem>
-                  <SelectItem value="CHF">CHF</SelectItem>
-                  <SelectItem value="INR">INR</SelectItem>
+
+                <SelectContent
+                  position="popper"
+                  side="bottom"
+                  sideOffset={8}
+                  className="max-h-60 overflow-y-auto"
+                >
+                  <SelectItem value="USD">USD – US Dollar</SelectItem>
+                  <SelectItem value="EUR">EUR – Euro</SelectItem>
+                  <SelectItem value="GBP">GBP – British Pound</SelectItem>
+                  <SelectItem value="JPY">JPY – Japanese Yen</SelectItem>
+                  <SelectItem value="CHF">CHF – Swiss Franc</SelectItem>
+                  <SelectItem value="CAD">CAD – Canadian Dollar</SelectItem>
+                  <SelectItem value="MXN">MXN – Mexican Peso</SelectItem>
+                  <SelectItem value="BRL">BRL – Brazilian Real</SelectItem>
+                  <SelectItem value="ARS">ARS – Argentine Peso</SelectItem>
+                  <SelectItem value="CLP">CLP – Chilean Peso</SelectItem>
+                  <SelectItem value="SEK">SEK – Swedish Krona</SelectItem>
+                  <SelectItem value="NOK">NOK – Norwegian Krone</SelectItem>
+                  <SelectItem value="DKK">DKK – Danish Krone</SelectItem>
+                  <SelectItem value="PLN">PLN – Polish Zloty</SelectItem>
+                  <SelectItem value="CZK">CZK – Czech Koruna</SelectItem>
+                  <SelectItem value="HUF">HUF – Hungarian Forint</SelectItem>
+                  <SelectItem value="RON">RON – Romanian Leu</SelectItem>
+                  <SelectItem value="INR">INR – Indian Rupee</SelectItem>
+                  <SelectItem value="CNY">CNY – Chinese Yuan</SelectItem>
+                  <SelectItem value="HKD">HKD – Hong Kong Dollar</SelectItem>
+                  <SelectItem value="SGD">SGD – Singapore Dollar</SelectItem>
+                  <SelectItem value="KRW">KRW – South Korean Won</SelectItem>
+                  <SelectItem value="THB">THB – Thai Baht</SelectItem>
+                  <SelectItem value="MYR">MYR – Malaysian Ringgit</SelectItem>
+                  <SelectItem value="IDR">IDR – Indonesian Rupiah</SelectItem>
+                  <SelectItem value="PHP">PHP – Philippine Peso</SelectItem>
+                  <SelectItem value="AED">AED – UAE Dirham</SelectItem>
+                  <SelectItem value="SAR">SAR – Saudi Riyal</SelectItem>
+                  <SelectItem value="ILS">ILS – Israeli Shekel</SelectItem>
+                  <SelectItem value="QAR">QAR – Qatari Riyal</SelectItem>
+                  <SelectItem value="ZAR">ZAR – South African Rand</SelectItem>
+                  <SelectItem value="EGP">EGP – Egyptian Pound</SelectItem>
+                  <SelectItem value="NGN">NGN – Nigerian Naira</SelectItem>
+                  <SelectItem value="AUD">AUD – Australian Dollar</SelectItem>
+                  <SelectItem value="NZD">NZD – New Zealand Dollar</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -157,15 +189,47 @@ export default function ForexPage() {
                 <SelectTrigger className="w-32">
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="USD">USD</SelectItem>
-                  <SelectItem value="EUR">EUR</SelectItem>
-                  <SelectItem value="GBP">GBP</SelectItem>
-                  <SelectItem value="JPY">JPY</SelectItem>
-                  <SelectItem value="AUD">AUD</SelectItem>
-                  <SelectItem value="CAD">CAD</SelectItem>
-                  <SelectItem value="CHF">CHF</SelectItem>
-                  <SelectItem value="INR">INR</SelectItem>
+                <SelectContent
+                  position="popper"
+                  side="bottom"
+                  sideOffset={8}
+                  className="max-h-60 overflow-y-auto"
+                >
+                  <SelectItem value="USD">USD – US Dollar</SelectItem>
+                  <SelectItem value="EUR">EUR – Euro</SelectItem>
+                  <SelectItem value="GBP">GBP – British Pound</SelectItem>
+                  <SelectItem value="JPY">JPY – Japanese Yen</SelectItem>
+                  <SelectItem value="CHF">CHF – Swiss Franc</SelectItem>
+                  <SelectItem value="CAD">CAD – Canadian Dollar</SelectItem>
+                  <SelectItem value="MXN">MXN – Mexican Peso</SelectItem>
+                  <SelectItem value="BRL">BRL – Brazilian Real</SelectItem>
+                  <SelectItem value="ARS">ARS – Argentine Peso</SelectItem>
+                  <SelectItem value="CLP">CLP – Chilean Peso</SelectItem>
+                  <SelectItem value="SEK">SEK – Swedish Krona</SelectItem>
+                  <SelectItem value="NOK">NOK – Norwegian Krone</SelectItem>
+                  <SelectItem value="DKK">DKK – Danish Krone</SelectItem>
+                  <SelectItem value="PLN">PLN – Polish Zloty</SelectItem>
+                  <SelectItem value="CZK">CZK – Czech Koruna</SelectItem>
+                  <SelectItem value="HUF">HUF – Hungarian Forint</SelectItem>
+                  <SelectItem value="RON">RON – Romanian Leu</SelectItem>
+                  <SelectItem value="INR">INR – Indian Rupee</SelectItem>
+                  <SelectItem value="CNY">CNY – Chinese Yuan</SelectItem>
+                  <SelectItem value="HKD">HKD – Hong Kong Dollar</SelectItem>
+                  <SelectItem value="SGD">SGD – Singapore Dollar</SelectItem>
+                  <SelectItem value="KRW">KRW – South Korean Won</SelectItem>
+                  <SelectItem value="THB">THB – Thai Baht</SelectItem>
+                  <SelectItem value="MYR">MYR – Malaysian Ringgit</SelectItem>
+                  <SelectItem value="IDR">IDR – Indonesian Rupiah</SelectItem>
+                  <SelectItem value="PHP">PHP – Philippine Peso</SelectItem>
+                  <SelectItem value="AED">AED – UAE Dirham</SelectItem>
+                  <SelectItem value="SAR">SAR – Saudi Riyal</SelectItem>
+                  <SelectItem value="ILS">ILS – Israeli Shekel</SelectItem>
+                  <SelectItem value="QAR">QAR – Qatari Riyal</SelectItem>
+                  <SelectItem value="ZAR">ZAR – South African Rand</SelectItem>
+                  <SelectItem value="EGP">EGP – Egyptian Pound</SelectItem>
+                  <SelectItem value="NGN">NGN – Nigerian Naira</SelectItem>
+                  <SelectItem value="AUD">AUD – Australian Dollar</SelectItem>
+                  <SelectItem value="NZD">NZD – New Zealand Dollar</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -209,22 +273,22 @@ export default function ForexPage() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
+              {forexHistory && (
+                <div>
+                  <Toggle
+                    onClick={handleAddToWatchlist}
+                    aria-label="Toggle bookmark"
+                    size="sm"
+                    variant="outline"
+                    className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-blue-500 data-[state=on]:*:[svg]:stroke-blue-500"
+                  >
+                    <BookmarkIcon />
+                    Bookmark
+                  </Toggle>
+                  <ToastContainer />
+                </div>
+              )}
             </div>
-            {forexHistory && (
-              <div>
-                <Toggle
-                  onClick={handleAddToWatchlist}
-                  aria-label="Toggle bookmark"
-                  size="sm"
-                  variant="outline"
-                  className="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-blue-500 data-[state=on]:*:[svg]:stroke-blue-500"
-                >
-                  <BookmarkIcon />
-                  Bookmark
-                </Toggle>
-                <ToastContainer />
-              </div>
-            )}
           </div>
         </CardContent>
       </Card>

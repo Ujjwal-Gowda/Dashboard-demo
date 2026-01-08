@@ -106,7 +106,7 @@ function useCurrencyPrice(curr: string) {
         const res = await axios.get("http://localhost:5000/api/crypto/curr", {
           params: { to: curr },
         });
-
+        console.log(res, res.data.cleaned.to);
         if (mounted) {
           setPrice(res.data.cleaned.to);
         }
@@ -210,7 +210,6 @@ export default function HomePage() {
           title="Market Status"
           value={marketOpen ? "OPEN" : "CLOSED"}
           icon={Rocket}
-          badge={marketOpen ? "Live" : "Closed"}
         />
       </div>
 

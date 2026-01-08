@@ -44,6 +44,18 @@ export async function exchangeRates(req: Request, res: Response) {
       WeeklyCandle
     >;
 
+    if (!raw) {
+      console.error("No forex data:", result.data);
+      return res.status(500).json({
+        error: "No forex data available",
+        message:
+          result.data?.Note ||
+          result.data?.Information ||
+          "API returned no data",
+        data: [],
+      });
+    }
+
     const data = Object.entries(raw).map(([date, values]) => ({
       date,
       open: Number(values["1. open"]),
@@ -71,6 +83,11 @@ export async function exchangeRates(req: Request, res: Response) {
     return res.json({ data });
   } catch (error: any) {
     console.error("Axios error:", error.response?.data || error.message);
+    return res.status(500).json({
+      error: "Failed to fetch forex data",
+      details: error.message,
+      data: [],
+    });
   }
 }
 
@@ -106,6 +123,15 @@ export async function weeklyexchangeRates(req: Request, res: Response) {
       string,
       WeeklyCandle
     >;
+    if (!raw) {
+      console.error("No forex data:", data.data);
+      return res.status(500).json({
+        error: "No forex data available",
+        message:
+          data.data?.Note || data.data?.Information || "API returned no data",
+        priceSeries: [],
+      });
+    }
     const priceSeries = Object.entries(raw).map(([date, values]) => ({
       date,
       price: Number(values["4. close"]),
@@ -130,6 +156,11 @@ export async function weeklyexchangeRates(req: Request, res: Response) {
     return res.json({ priceSeries });
   } catch (error: any) {
     console.error("Axios error:", error.response?.data || error.message);
+    return res.status(500).json({
+      error: "Failed to fetch forex data",
+      details: error.message,
+      priceSeries: [],
+    });
   }
 }
 
@@ -156,7 +187,7 @@ export async function stocksinfo(req: Request, res: Response) {
     }
 
     const result = await axios.get(
-      `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&outputsize=full&apikey=${API_KEY}`,
+      `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&outputsize=compact&apikey=${API_KEY}`,
       // `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=RELIANCE.BSE&outputsize=full&apikey=demo`,
     );
 
@@ -164,6 +195,17 @@ export async function stocksinfo(req: Request, res: Response) {
       string,
       WeeklyCandle
     >;
+    if (!raw) {
+      console.error("No data returned from API:", result.data);
+      return res.status(500).json({
+        error: "No stock data available",
+        message:
+          result.data?.Note ||
+          result.data?.Information ||
+          "API returned no data",
+        data: [],
+      });
+    }
     const data = Object.entries(raw).map(([date, values]) => ({
       date,
       open: Number(values["1. open"]),
@@ -187,11 +229,15 @@ export async function stocksinfo(req: Request, res: Response) {
       },
       { upsert: true },
     );
-
-    console.log(data);
+    console.log("Stock data fetched:", data.length, "records");
     return res.json({ data });
   } catch (error: any) {
     console.error("Axios error:", error.response?.data || error.message);
+    return res.status(500).json({
+      error: "Failed to fetch stock data",
+      details: error.message,
+      data: [],
+    });
   }
 }
 
@@ -220,13 +266,25 @@ export async function stockschart(req: Request, res: Response) {
     const result = await axios.get(
       // `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=RELIANCE.BSE&outputsize=compact&apikey=demo`,
       // `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=RELIANCE.BSE&outputsize=full&apikey=demo`,
-      `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&outputsize=full&apikey=${API_KEY}`,
+      `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&outputsize=compact&apikey=${API_KEY}`,
     );
 
     const raw = result.data["Time Series (Daily)"] as Record<
       string,
       WeeklyCandle
     >;
+
+    if (!raw) {
+      console.error("No data returned from API:", result.data);
+      return res.status(500).json({
+        error: "No stock data available",
+        message:
+          result.data?.Note ||
+          result.data?.Information ||
+          "API returned no data",
+        priceSeries: [],
+      });
+    }
     const priceSeries = Object.entries(raw).map(([date, values]) => ({
       date,
       price: Number(values["4. close"]),
@@ -251,6 +309,11 @@ export async function stockschart(req: Request, res: Response) {
     return res.json({ priceSeries });
   } catch (error: any) {
     console.error("Axios error:", error.response?.data || error.message);
+    return res.status(500).json({
+      error: "Failed to fetch stock chart data",
+      details: error.message,
+      priceSeries: [],
+    });
   }
 }
 
@@ -285,6 +348,17 @@ export async function cryptomarket(req: Request, res: Response) {
       string,
       WeeklyCandle
     >;
+    if (!raw) {
+      console.error("No crypto data:", result.data);
+      return res.status(500).json({
+        error: "No crypto data available",
+        message:
+          result.data?.Note ||
+          result.data?.Information ||
+          "API returned no data",
+        data: [],
+      });
+    }
     console.log(res, symbol);
     const data = Object.entries(raw).map(([date, values]) => ({
       date,
@@ -314,6 +388,11 @@ export async function cryptomarket(req: Request, res: Response) {
     return res.json({ data });
   } catch (error: any) {
     console.error("Axios error:", error.response?.data || error.message);
+    return res.status(500).json({
+      error: "Failed to fetch crypto data",
+      details: error.message,
+      data: [],
+    });
   }
 }
 export function marketStatus(req: Request, res: Response) {

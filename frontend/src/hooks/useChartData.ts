@@ -19,11 +19,15 @@ export function useChartData(endpoint: string, params?: Record<string, any>) {
         const res = await axios.get(endpoint, { params });
 
         if (mounted) {
-          setData(res.data.priceSeries);
+          const chartData = res.data.priceSeries || res.data.data || [];
+          setData(Array.isArray(chartData) ? chartData : []);
         }
-        console.log("raw data ", res.data.data);
-      } catch (err) {
-        setError("Failed to load chart data");
+        console.log("raw data ", res.data);
+      } catch (err: any) {
+        if (mounted) {
+          setError(err.response?.data?.message || "Failed to load chart data");
+          setData([]);
+        }
       } finally {
         mounted && setLoading(false);
       }
@@ -34,6 +38,7 @@ export function useChartData(endpoint: string, params?: Record<string, any>) {
       mounted = false;
     };
   }, [endpoint, JSON.stringify(params)]);
+
   console.log("data", data);
   return { data, loading, error };
 }

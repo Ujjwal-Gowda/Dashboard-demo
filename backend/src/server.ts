@@ -11,8 +11,8 @@ Connectiondb();
 app.use("/api/crypto", cryptoRoutes);
 app.use("/api/market", marketRoutes);
 app.use("/api/service", serviceRoutes);
-app.use("/health", () => {
-  console.log("health check");
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 app.listen(5000, () => {
   console.log("port running at http://localhost:5000");

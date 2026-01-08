@@ -22,8 +22,17 @@ import { ChartAreaInteractive } from "../components/area-chart";
 import { Toggle } from "../components/ui/toggle";
 import { toast, Bounce, ToastContainer } from "react-toastify";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
+import { exportToCSV, exportToJSON } from "../lib/exportutils";
+import { Download } from "lucide-react";
 import { BookmarkIcon } from "lucide-react";
 import { useThemeStore } from "../hooks/usetheme";
+import { fromTheme } from "tailwind-merge";
 export interface ForexRow {
   date: string;
   open: number;
@@ -129,7 +138,7 @@ export default function ForexPage() {
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="USE">USD</SelectItem>
+                  <SelectItem value="USD">USD</SelectItem>
                   <SelectItem value="EUR">EUR</SelectItem>
                   <SelectItem value="GBP">GBP</SelectItem>
                   <SelectItem value="JPY">JPY</SelectItem>
@@ -149,7 +158,7 @@ export default function ForexPage() {
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="USE">USD</SelectItem>
+                  <SelectItem value="USD">USD</SelectItem>
                   <SelectItem value="EUR">EUR</SelectItem>
                   <SelectItem value="GBP">GBP</SelectItem>
                   <SelectItem value="JPY">JPY</SelectItem>
@@ -162,10 +171,45 @@ export default function ForexPage() {
             </div>
 
             {/* Actions */}
-            <Button onClick={resetforex} variant="outline">
-              Reset
-            </Button>
 
+            <div className="flex gap-2 md:justify-end">
+              <Button variant="outline" onClick={resetforex}>
+                Reset
+              </Button>
+
+              {tableData.length > 0 && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <Download className="h-4 w-4 mr-2" />
+                      Export
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        exportToCSV(
+                          tableData,
+                          `crypto-${selectFrom}-${selectTo}`,
+                        )
+                      }
+                    >
+                      Export as CSV
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        exportToJSON(
+                          tableData,
+                          `crypto-${selectFrom}-${selectTo}`,
+                        )
+                      }
+                    >
+                      Export as JSON
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </div>
             {forexHistory && (
               <div>
                 <Toggle

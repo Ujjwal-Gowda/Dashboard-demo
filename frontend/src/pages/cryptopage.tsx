@@ -22,6 +22,16 @@ import { ChartAreaInteractive } from "../components/area-chart";
 import { useThemeStore } from "../hooks/usetheme.ts";
 import { BookmarkIcon } from "lucide-react";
 import { Toggle } from "../components/ui/toggle";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
+import { exportToCSV, exportToJSON } from "../lib/exportutils";
+import { Download } from "lucide-react";
+
 export interface CryptoRow {
   date: string;
   open: number;
@@ -132,7 +142,6 @@ export default function CryptoMarketPage() {
                 placeholder="BTC, ETH, SOL..."
               />
             </div>
-
             {/* Preset Coins */}
             <div className="space-y-1">
               <label className="text-xs text-muted-foreground">
@@ -153,7 +162,6 @@ export default function CryptoMarketPage() {
                 </SelectContent>
               </Select>
             </div>
-
             {/* Market */}
             <div className="space-y-1">
               <label className="text-xs text-muted-foreground">Market</label>
@@ -168,12 +176,43 @@ export default function CryptoMarketPage() {
                 </SelectContent>
               </Select>
             </div>
-
-            {/* Actions */}
             <div className="flex gap-2 md:justify-end">
               <Button variant="outline" onClick={resetClicked}>
                 Reset
               </Button>
+
+              {tableData.length > 0 && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <Download className="h-4 w-4 mr-2" />
+                      Export
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        exportToCSV(
+                          tableData,
+                          `crypto-${selectCoin}-${selectMarket}`,
+                        )
+                      }
+                    >
+                      Export as CSV
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        exportToJSON(
+                          tableData,
+                          `crypto-${selectCoin}-${selectMarket}`,
+                        )
+                      }
+                    >
+                      Export as JSON
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
               {coinHistory && (
                 <div>
                   <Toggle
@@ -190,6 +229,7 @@ export default function CryptoMarketPage() {
                 </div>
               )}
             </div>
+            {/* Actions */}
           </div>
         </CardContent>
       </Card>

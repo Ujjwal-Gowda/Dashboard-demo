@@ -13,6 +13,15 @@ import {
   SelectItem,
   SelectValue,
 } from "../components/ui/select";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
+import { exportToCSV, exportToJSON } from "../lib/exportutils";
+import { Download } from "lucide-react";
 import { TableDemo } from "../components/table/page";
 import { useTable } from "../hooks/tablehook";
 import { useChartData } from "../hooks/useChartData";
@@ -151,10 +160,39 @@ export default function StocksPage() {
             </div>
 
             {/* Actions */}
-            <Button variant="outline" onClick={resetStock}>
-              Reset
-            </Button>
 
+            <div className="flex gap-2 md:justify-end">
+              <Button variant="outline" onClick={resetStock}>
+                Reset
+              </Button>
+
+              {tableData.length > 0 && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      <Download className="h-4 w-4 mr-2" />
+                      Export
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        exportToCSV(tableData, `crypto-${selectStock}`)
+                      }
+                    >
+                      Export as CSV
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        exportToJSON(tableData, `crypto-${selectStock}`)
+                      }
+                    >
+                      Export as JSON
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </div>
             {stocksHistory && (
               <div>
                 <Toggle

@@ -1,4 +1,5 @@
 import { Card } from "../components/ui/card";
+import type { LucideIcon } from "lucide-react";
 
 interface KPIStat {
   label: string;
@@ -8,7 +9,7 @@ interface KPIStat {
 interface KPICardProps {
   title: string;
   value: string | number;
-  icon: I;
+  icon: LucideIcon;
   stats?: KPIStat[];
 }
 

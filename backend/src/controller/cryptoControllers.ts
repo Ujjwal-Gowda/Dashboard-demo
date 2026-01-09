@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import axios from "axios";
 import { MarketModel } from "../model/modals";
 import { number } from "zod";
+import redis from "../lib/redis";
 dotenv.config();
 const COINPAPRIKA_URL = "https://api.coinpaprika.com/v1/tickers";
 
@@ -22,7 +23,17 @@ export async function cryptoinfo(req: Request, res: Response) {
   if (!currency || !COIN) {
     return res.status(400).json({ error: "missing field" });
   }
+
+  const cachedKey = `crypto${COIN}:${currency}`;
   try {
+    const cached = await redis.get(cachedKey);
+    if (cached) {
+      console.log("redis output", JSON.parse(cached));
+      return res.json({
+        cleanedData: JSON.parse(cached),
+        cached: true,
+      });
+    }
     const data = await axios.get(
       `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=${COIN}&to_currency=${currency}&apikey=${API_KEY}`,
 
@@ -52,7 +63,7 @@ export async function cryptoinfo(req: Request, res: Response) {
       ask: Number(raw["9. Ask Price"]),
       lastUpdated: raw["6. Last Refreshed"],
     };
-
+    await redis.set(cachedKey, JSON.stringify(cleanedData), { EX: 3600 });
     console.log(cleanedData);
     return res.json({ cleanedData });
   } catch (error) {
@@ -231,7 +242,16 @@ export async function finagecrypto(req: Request, res: Response) {
   if (!COIN) {
     return res.status(400).json({ error: "missing field" });
   }
+  const cachedKey = `${COIN}finage`;
   try {
+    const cached = await redis.get(cachedKey);
+    if (cached) {
+      console.log("redis output", JSON.parse(cached));
+      return res.json({
+        cleanedData: JSON.parse(cached),
+        redis: true,
+      });
+    }
     const data = await axios.get(
       `https://api.finage.co.uk/last/crypto/${COIN}?apikey=${finageKey}`,
       // `https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency=BTC&to_currency=EUR&apikey=demo`,
@@ -247,6 +267,7 @@ export async function finagecrypto(req: Request, res: Response) {
       price: raw?.price,
       symbol: raw?.symbol,
     };
+    await redis.set(cachedKey, JSON.stringify(cleanedData), { EX: 3600 });
     console.log(cleanedData);
     return res.json({ cleanedData });
   } catch (error) {
@@ -259,19 +280,15 @@ export async function curexchangee(req: Request, res: Response) {
   if (!tocurr) {
     return res.status(400).json({ error: "missing field" });
   }
+  const cachedKey = `${tocurr}exchange`;
   try {
-    const cached = await MarketModel.findOne({
-      assetType: "forex",
-      symbol: `currency exchange`,
-      market: "global",
-      timeframe: "daily",
-    });
-    if (
-      cached &&
-      Date.now() - cached.fetchedAt.getTime() <= 12 * 60 * 60 * 1000
-    ) {
-      console.log("cache", cached);
-      return res.status(200).json({ cleaned: cached.data });
+    const cached = await redis.get(cachedKey);
+    if (cached) {
+      console.log("redis output", JSON.parse(cached));
+      return res.json({
+        cleaned: JSON.parse(cached),
+        redis: true,
+      });
     }
     const data = await axios.get(
       // `https://www.alphavantage.co/query?function=fx_daily&from_symbol=${fromcur}&to_symbol=${tocur}&apikey=${api_key}`,
@@ -284,22 +301,7 @@ export async function curexchangee(req: Request, res: Response) {
       from: "EUR",
       to: raw[tocurr as string],
     };
-
-    await MarketModel.findOneAndUpdate(
-      {
-        assetType: "forex",
-
-        symbol: `currency exchange`,
-        market: "global",
-        timeframe: "daily",
-      },
-      {
-        data: cleaned,
-        source: "alphavantage",
-        fetchedAt: new Date(),
-      },
-      { upsert: true },
-    );
+    await redis.set(cachedKey, JSON.stringify(cleaned), { EX: 3600 });
 
     console.log(raw, cleaned, tocurr);
     return res.json({ cleaned });
@@ -336,7 +338,6 @@ export const getCryptoTable = async (req: Request, res: Response) => {
     const response = await axios.get(COINPAPRIKA_URL);
     let data = response.data;
 
-    // 🔍 Optional search (BTC, ETH, etc.)
     if (search) {
       const q = search.toLowerCase();
       data = data.filter(

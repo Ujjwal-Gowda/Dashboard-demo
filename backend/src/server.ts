@@ -4,6 +4,7 @@ import cors from "cors";
 import cryptoRoutes from "./routes/cryptoRoutes";
 import marketRoutes from "./routes/marketRoutes";
 import serviceRoutes from "./routes/serviceroutes";
+import { rediscon } from "./lib/redis";
 const app = express();
 
 app.use(cors());
@@ -14,6 +15,7 @@ app.use("/api/service", serviceRoutes);
 app.get("/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
+rediscon();
 app.listen(5000, () => {
   console.log("port running at http://localhost:5000");
 });

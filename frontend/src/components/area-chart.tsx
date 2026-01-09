@@ -35,14 +35,14 @@ const chartConfig = {
 interface ChartPoint {
   date: string;
   price: number;
-  exprice: number;
+  exprice?: number;
 }
 
 interface ChartAreaInteractiveProps {
   title: string;
   description?: string;
   data: ChartPoint[];
-  exdata: ChartPoint[];
+  exdata?: ChartPoint[];
 }
 
 export function ChartAreaInteractive({
@@ -54,21 +54,34 @@ export function ChartAreaInteractive({
   const [timeRange, setTimeRange] = React.useState("90d");
 
   const filteredData = React.useMemo(() => {
-    if (!data.length) return [];
+    if (!data || data.length === 0) return [];
 
-    const referenceDate = new Date(data[data.length - 1].date);
+    // Sort data by date to ensure correct ordering
+    const sortedData = [...data].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+    );
+
+    // Get the most recent date from the sorted data
+    const referenceDate = new Date(sortedData[sortedData.length - 1].date);
 
     let days = 90;
     if (timeRange === "30d") days = 30;
     if (timeRange === "7d") days = 7;
 
-    const start = new Date(referenceDate);
-    start.setDate(start.getDate() - days);
+    // Calculate the start date
+    const startDate = new Date(referenceDate);
+    startDate.setDate(startDate.getDate() - days);
 
-    return data.filter((d) => new Date(d.date) >= start);
+    // Filter data within the date range
+    const filtered = sortedData.filter((item) => {
+      const itemDate = new Date(item.date);
+      return itemDate >= startDate && itemDate <= referenceDate;
+    });
+
+    return filtered;
   }, [data, timeRange]);
 
-  if (!data.length) {
+  if (!data || data.length === 0) {
     return (
       <Card>
         <CardContent className="flex h-[250px] items-center justify-center">
@@ -117,15 +130,42 @@ export function ChartAreaInteractive({
             </defs>
 
             <CartesianGrid vertical={false} />
-            <XAxis dataKey="date" />
+            <XAxis
+              dataKey="date"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              minTickGap={32}
+              tickFormatter={(value) => {
+                const date = new Date(value);
+                return date.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                });
+              }}
+            />
 
-            <ChartTooltip content={<ChartTooltipContent indicator="dot" />} />
+            <ChartTooltip
+              content={
+                <ChartTooltipContent
+                  indicator="dot"
+                  labelFormatter={(value) => {
+                    return new Date(value).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    });
+                  }}
+                />
+              }
+            />
 
             <Area
               dataKey="price"
               type="monotone"
               fill="url(#fillPrice)"
               stroke="var(--color-price)"
+              strokeWidth={2}
             />
           </AreaChart>
         </ChartContainer>

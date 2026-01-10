@@ -33,7 +33,7 @@ export function BreadcrumbDemo() {
 
         {crumbs.length > 0 && <BreadcrumbSeparator />}
 
-        {crumbs.map((crumb, index) => (
+        {crumbs.map((crumb) => (
           <div key={crumb.path} className="flex items-center">
             <BreadcrumbItem>
               {crumb.isLast ? (

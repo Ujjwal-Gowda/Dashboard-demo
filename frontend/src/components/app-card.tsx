@@ -9,7 +9,7 @@ import {
 
 export function CardDefault() {
   return (
-    <Card size="default" className="">
+    <Card className="">
       <CardHeader>
         <CardTitle>Stock info</CardTitle>
 

@@ -3,19 +3,34 @@ import {
   TableBody,
   TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "../ui/table";
 
 interface TableDemoProps {
-  data: [];
+  data: MarketCoin[] | csfData[];
   loading?: boolean;
-  name: string;
+  name: "home" | "crypto" | "stocks" | "forex";
   rowsPerPage?: number;
 }
+interface MarketCoin {
+  rank: number;
+  symbol: string;
+  name: string;
+  price: number;
+  change24h: number;
+  marketCap: number;
+}
 
+interface csfData {
+  date: string;
+  open: number;
+  high: number;
+  low: number;
+  price: number;
+  volume?: number;
+}
 import { useState, useEffect, useMemo } from "react";
 
 export function TableDemo({
@@ -66,7 +81,7 @@ export function TableDemo({
           </TableHeader>
 
           <TableBody>
-            {paginatedData.map((coin) => (
+            {(paginatedData as MarketCoin[]).map((coin) => (
               <TableRow key={`${coin.symbol}-${coin.rank}`}>
                 <TableCell>{coin.rank}</TableCell>
                 <TableCell className="font-medium">{coin.symbol}</TableCell>
@@ -118,7 +133,7 @@ export function TableDemo({
           </TableHeader>
 
           <TableBody>
-            {paginatedData.map((coin) => (
+            {(paginatedData as csfData[]).map((coin) => (
               <TableRow key={`${coin.date}`}>
                 <TableCell>{coin.date}</TableCell>
                 <TableCell className="font-medium">{coin.open}</TableCell>

@@ -7,7 +7,7 @@ import Stockspage from "./pages/stockspage.tsx";
 import Cryptopage from "./pages/cryptopage.tsx";
 import Forexpage from "./pages/forexpage.tsx";
 import Settingspage from "./pages/settingspage.tsx";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 function App() {
   return (

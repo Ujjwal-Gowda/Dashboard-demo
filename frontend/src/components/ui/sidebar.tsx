@@ -520,6 +520,18 @@ function SidebarMenuButton({
     />
   );
 
+  const liked = () =>
+    toast.success("Added to Watchlist", {
+      position: "bottom-right",
+      autoClose: 5000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: theme,
+      transition: Bounce,
+    });
   if (!tooltip) {
     return button;
   }

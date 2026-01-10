@@ -23,6 +23,8 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+
+import { ToastContainer, toast, Bounce } from "react-toastify";
 import {
   Collapsible,
   CollapsibleTrigger,
@@ -31,9 +33,34 @@ import {
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Separator } from "./ui/separator";
 
+import { useThemeStore } from "../hooks/usetheme.ts";
+
 export function AppSidebar() {
   const navigate = useNavigate();
 
+  const fetchedTheme = useThemeStore((s) => s.theme);
+  let theme = "";
+  if (fetchedTheme == "light") {
+    theme = "dark";
+  } else if (fetchedTheme == "dark") {
+    theme = "light";
+  } else {
+    theme = "light";
+  }
+  const loggedOut = () => {
+    toast.dismiss();
+    toast.success("Logged Out", {
+      position: "bottom-right",
+      autoClose: 5000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: theme,
+      transition: Bounce,
+    });
+  };
   return (
     <Sidebar collapsible="icon">
       {/* Header */}
@@ -142,9 +169,10 @@ export function AppSidebar() {
           </SidebarMenuItem>
 
           <SidebarMenuItem>
-            <SidebarMenuButton className="text-destructive">
+            <SidebarMenuButton onClick={loggedOut} className="text-destructive">
               <LogOut className="h-5 w-5" />
               <span>Logout</span>
+              <ToastContainer />
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

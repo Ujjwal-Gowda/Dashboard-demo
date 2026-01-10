@@ -32,17 +32,16 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-interface ChartPoint {
+interface ImportedChartPoint {
   date: string;
   price: number;
   exprice?: number;
 }
-
 interface ChartAreaInteractiveProps {
   title: string;
   description?: string;
-  data: ChartPoint[];
-  exdata?: ChartPoint[];
+  data: ImportedChartPoint[];
+  exdata?: ImportedChartPoint[];
 }
 
 export function ChartAreaInteractive({

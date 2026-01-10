@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+interface UseTableOptions<T> {
+  endpoint: string;
+  params?: Record<string, any>;
+  enabled?: boolean;
+}
+
 export function useTable<T>({
   endpoint,
   params,
   enabled = true,
-}: UsetableOptions<T>) {
+}: UseTableOptions<T>) {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(enabled);
   const [error, setError] = useState<string | null>(null);

@@ -144,7 +144,7 @@ export function TableDemo({
                 </TableCell>
                 {name != "forex" && (
                   <TableCell className="text-right">
-                    ${coin.volume.toLocaleString()}
+                    ${coin.volume.toLocaleString() ?? `N/A`}
                   </TableCell>
                 )}
               </TableRow>

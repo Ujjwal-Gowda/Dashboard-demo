@@ -3,7 +3,7 @@ import { useTable } from "../hooks/tablehook";
 import { Card } from "../components/ui/card";
 import { ChartAreaInteractive } from "../components/area-chart";
 import { TableDemo } from "../components/table/page";
-import { BarChart3, Users, Rocket, Mail } from "lucide-react";
+import { BarChart3, Users, Rocket } from "lucide-react";
 import { useChartData } from "../hooks/useChartData";
 import { useEffect, useState } from "react";
 import axios from "axios";

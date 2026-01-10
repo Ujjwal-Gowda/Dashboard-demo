@@ -58,11 +58,7 @@ export default function ForexPage() {
   } else {
     theme = "light";
   }
-  const {
-    data: tableData,
-    loading: tableLoading,
-    error: tableError,
-  } = useTable<ForexRow>({
+  const { data: tableData, loading: tableLoading } = useTable<ForexRow>({
     endpoint: "http://localhost:5000/api/market/forex",
     params: { from: selectFrom, to: selectTo },
   });

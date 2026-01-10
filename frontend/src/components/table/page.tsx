@@ -142,7 +142,7 @@ export function TableDemo({
                 <TableCell className="text-right">
                   ${coin.price.toLocaleString()}
                 </TableCell>
-                {name != "forex" && (
+                {name != "forex" && coin.volume !== undefined && (
                   <TableCell className="text-right">
                     ${coin.volume.toLocaleString() ?? `N/A`}
                   </TableCell>

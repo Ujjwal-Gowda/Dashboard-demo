@@ -39,6 +39,16 @@ export interface ForexRow {
   low: number;
   price: number;
 }
+
+interface ImportedChartPoint {
+  date: string;
+  price: number;
+  exprice?: number;
+}
+export interface ChartPoint {
+  date: string;
+  [key: string]: number | string;
+}
 export default function ForexPage() {
   const [selectFrom, setFrom] = useState<string>("");
   const [selectTo, setTo] = useState<string>("");
@@ -66,6 +76,14 @@ export default function ForexPage() {
     "http://localhost:5000/api/market/weeklyex",
     { from: selectFrom, to: selectTo },
   );
+  const normalizedData: ImportedChartPoint[] = forexHistory
+    .filter(
+      (d): d is ChartPoint & { price: number } => typeof d.price === "number",
+    )
+    .map((d) => ({
+      date: d.date,
+      price: d.price,
+    }));
 
   function handleAddToWatchlist() {
     if ((!selectFrom && !selectTo) || !forexHistory) return;
@@ -310,7 +328,7 @@ export default function ForexPage() {
               <ChartAreaInteractive
                 title="forex Price History"
                 description="Daily forex price (USD)"
-                data={forexHistory.reverse()}
+                data={normalizedData.reverse()}
               />
             </div>
           )}

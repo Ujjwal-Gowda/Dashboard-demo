@@ -41,6 +41,15 @@ export interface stocksRow {
   volume: number;
 }
 
+interface ImportedChartPoint {
+  date: string;
+  price: number;
+  exprice?: number;
+}
+export interface ChartPoint {
+  date: string;
+  [key: string]: number | string;
+}
 export default function StocksPage() {
   const [selectStock, setStock] = useState<string>("");
   const addItem = useWatchlist((s) => s.addItem);
@@ -65,6 +74,14 @@ export default function StocksPage() {
     "http://localhost:5000/api/market/stockschart",
     { symbol: selectStock },
   );
+  const normalizedData: ImportedChartPoint[] = stocksHistory
+    .filter(
+      (d): d is ChartPoint & { price: number } => typeof d.price === "number",
+    )
+    .map((d) => ({
+      date: d.date,
+      price: d.price,
+    }));
   function handleAddToWatchlist() {
     if (!selectStock && !stocksHistory) return;
     console.log(
@@ -249,7 +266,7 @@ export default function StocksPage() {
               <ChartAreaInteractive
                 title="stocks History"
                 description="Daily stocks price (USD)"
-                data={stocksHistory}
+                data={normalizedData}
               />
             </div>
           )}

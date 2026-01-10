@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-interface UseTableOptions<T> {
+interface UseTableOptions {
   endpoint: string;
   params?: Record<string, any>;
   enabled?: boolean;
@@ -11,7 +11,7 @@ export function useTable<T>({
   endpoint,
   params,
   enabled = true,
-}: UseTableOptions<T>) {
+}: UseTableOptions) {
   const [data, setData] = useState<T[]>([]);
   const [loading, setLoading] = useState(enabled);
   const [error, setError] = useState<string | null>(null);
@@ -26,14 +26,12 @@ export function useTable<T>({
       setError(null);
 
       try {
-        const res = await axios.get(endpoint, {
+        const res = await axios.get<{ data: T[] }>(endpoint, {
           params,
           signal: controller.signal,
         });
 
-        const result = res.data.data;
-        console.log("imp ", result);
-        setData(result);
+        setData(res.data.data);
       } catch (err: any) {
         if (err.name !== "CanceledError") {
           setError("Failed to fetch data");
@@ -45,7 +43,7 @@ export function useTable<T>({
 
     fetchData();
     return () => controller.abort();
-  }, [endpoint, JSON.stringify(params), enabled]);
+  }, [endpoint, params, enabled]);
 
   return { data, loading, error };
 }

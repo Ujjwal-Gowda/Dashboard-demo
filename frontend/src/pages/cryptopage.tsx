@@ -31,7 +31,15 @@ import {
 } from "../components/ui/dropdown-menu";
 import { exportToCSV, exportToJSON } from "../lib/exportutils";
 import { Download } from "lucide-react";
-
+interface ImportedChartPoint {
+  date: string;
+  price: number;
+  exprice?: number;
+}
+export interface ChartPoint {
+  date: string;
+  [key: string]: number | string;
+}
 export interface CryptoRow {
   date: string;
   open: number;
@@ -69,6 +77,15 @@ export default function CryptoMarketPage() {
     "http://localhost:5000/api/crypto/weekly",
     { coin: selectCoin, CUR: selectMarket },
   );
+
+  const normalizedData: ImportedChartPoint[] = coinHistory
+    .filter(
+      (d): d is ChartPoint & { price: number } => typeof d.price === "number",
+    )
+    .map((d) => ({
+      date: d.date,
+      price: d.price,
+    }));
 
   function handleAddToWatchlist() {
     if (!selectCoin && !selectMarket && !coinHistory) return;
@@ -268,7 +285,7 @@ export default function CryptoMarketPage() {
               <ChartAreaInteractive
                 title="BTC Price History"
                 description="Daily BTC price (USD)"
-                data={coinHistory}
+                data={normalizedData}
               />
             </div>
           )}

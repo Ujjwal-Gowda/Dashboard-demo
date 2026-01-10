@@ -18,6 +18,15 @@ export interface CryptoRow {
   volume24h: number;
 }
 
+interface ImportedChartPoint {
+  date: string;
+  price: number;
+  exprice?: number;
+}
+export interface ChartPoint {
+  date: string;
+  [key: string]: number | string;
+}
 function useCryptoPrice(coin: string) {
   const [price, setPrice] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -169,6 +178,24 @@ export default function HomePage() {
     params: { page: 1, limit: 10 },
   });
 
+  const btcnormalizedData: ImportedChartPoint[] = btcHistory
+    .filter(
+      (d): d is ChartPoint & { price: number } => typeof d.price === "number",
+    )
+    .map((d) => ({
+      date: d.date,
+      price: d.price,
+    }));
+
+  const excnormalizedData: ImportedChartPoint[] = exchangeHis
+    .filter(
+      (d): d is ChartPoint & { price: number } => typeof d.price === "number",
+    )
+    .map((d) => ({
+      date: d.date,
+      price: d.price,
+    }));
+
   return (
     <div className="space-y-6">
       {/* KPI Cards */}
@@ -206,7 +233,7 @@ export default function HomePage() {
             <ChartAreaInteractive
               title="BTC Price History"
               description="Daily BTC price (USD)"
-              data={btcHistory}
+              data={btcnormalizedData}
             />
           </div>
         )}
@@ -219,7 +246,7 @@ export default function HomePage() {
             <ChartAreaInteractive
               title="CURRENCY Exchange"
               description="USD To INR"
-              data={exchangeHis}
+              data={excnormalizedData}
             />
           </div>
         )}

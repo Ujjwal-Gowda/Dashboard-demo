@@ -1,7 +1,7 @@
 import { createClient } from "redis";
 
 const redis = createClient({
-  url: "redis://localhost:6379",
+  url: process.env.REDIS_URL,
 });
 
 redis.on("connect", () => {
@@ -13,6 +13,16 @@ redis.on("error", (err) => {
 });
 
 export async function rediscon() {
-  await redis.connect();
+  if (!process.env.REDIS_URL) {
+    console.warn("REDIS_URL not set, skipping Redis");
+    return;
+  }
+  if (!redis.isOpen) {
+    await redis.connect();
+  }
 }
+
 export default redis;
+
+// URL to run redis locally
+// REDIS_URL=redis://localhost:6379

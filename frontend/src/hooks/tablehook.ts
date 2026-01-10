@@ -1,12 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-interface UsetableOptions<T> {
-  endpoint: string;
-  params?: Record<string, any>;
-  enabled?: boolean;
-}
-
 export function useTable<T>({
   endpoint,
   params,

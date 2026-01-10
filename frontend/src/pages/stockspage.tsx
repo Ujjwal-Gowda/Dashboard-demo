@@ -57,11 +57,7 @@ export default function StocksPage() {
   } else {
     theme = "light";
   }
-  const {
-    data: tableData,
-    loading: tableLoading,
-    error: tableError,
-  } = useTable<stocksRow>({
+  const { data: tableData, loading: tableLoading } = useTable<stocksRow>({
     endpoint: "http://localhost:5000/api/market/stocks",
     params: { symbol: selectStock },
   });

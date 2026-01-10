@@ -41,13 +41,6 @@ export interface CryptoRow {
   volume: number;
 }
 
-interface WatchItem {
-  id: string;
-  name: string;
-  symbol: string;
-  price: number;
-  change24h: number;
-}
 import { useWatchlist } from "../hooks/watchlist.ts";
 
 export default function CryptoMarketPage() {
@@ -68,11 +61,7 @@ export default function CryptoMarketPage() {
     setSelectMarket("");
   }
   console.log(selectCoin, selectMarket);
-  const {
-    data: tableData,
-    loading: tableLoading,
-    error: tableError,
-  } = useTable<CryptoRow>({
+  const { data: tableData, loading: tableLoading } = useTable<CryptoRow>({
     endpoint: "http://localhost:5000/api/market/crypto",
     params: { symbol: selectCoin, market: selectMarket },
   });

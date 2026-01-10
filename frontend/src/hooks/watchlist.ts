@@ -18,7 +18,7 @@ interface WatchlistState {
 
 export const useWatchlist = create<WatchlistState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       items: [],
       addItem: (item) =>
         set((state) => {

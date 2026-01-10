@@ -7,17 +7,6 @@ import { BarChart3, Users, Rocket, Mail } from "lucide-react";
 import { useChartData } from "../hooks/useChartData";
 import { useEffect, useState } from "react";
 import axios from "axios";
-interface KPIResponse {
-  cleanedData: {
-    pair: string;
-    from: string;
-    to: string;
-    rate: number;
-    bid: number;
-    ask: number;
-    lastUpdated: string;
-  };
-}
 
 export interface CryptoRow {
   rank: number;
@@ -175,11 +164,7 @@ export default function HomePage() {
     { from: "USD", to: "INR" },
   );
   console.log("exchange", exchangeHis);
-  const {
-    data: tableData,
-    loading: tableLoading,
-    error: tableError,
-  } = useTable<CryptoRow>({
+  const { data: tableData, loading: tableLoading } = useTable<CryptoRow>({
     endpoint: "http://localhost:5000/api/crypto/table",
     params: { page: 1, limit: 10 },
   });

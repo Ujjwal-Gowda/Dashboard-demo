@@ -12,7 +12,7 @@ import {
   SelectItem,
   SelectValue,
 } from "../components/ui/select";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useWatchlist } from "../hooks/watchlist";
 import { useTable } from "../hooks/tablehook";
 import { TableDemo } from "../components/table/page";
@@ -68,9 +68,14 @@ export default function ForexPage() {
   } else {
     theme = "light";
   }
+  const forexParams = useMemo(
+    () => ({ from: selectFrom, to: selectTo }),
+    [selectFrom, selectTo],
+  );
+
   const { data: tableData, loading: tableLoading } = useTable<ForexRow>({
     endpoint: "http://localhost:5000/api/market/forex",
-    params: { from: selectFrom, to: selectTo },
+    params: forexParams,
   });
   const { data: forexHistory, loading } = useChartData(
     "http://localhost:5000/api/market/weeklyex",

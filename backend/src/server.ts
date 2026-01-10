@@ -5,6 +5,7 @@ import cryptoRoutes from "./routes/cryptoRoutes";
 import marketRoutes from "./routes/marketRoutes";
 import serviceRoutes from "./routes/serviceroutes";
 import { rediscon } from "./lib/redis";
+import { Request, Response } from "express";
 const app = express();
 
 app.use(cors());
@@ -12,7 +13,7 @@ Connectiondb();
 app.use("/api/crypto", cryptoRoutes);
 app.use("/api/market", marketRoutes);
 app.use("/api/service", serviceRoutes);
-app.get("/health", (req, res) => {
+app.get("/health", (req: Request, res: Response) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 rediscon();

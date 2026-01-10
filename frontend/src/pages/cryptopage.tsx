@@ -16,7 +16,7 @@ import {
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import { TableDemo } from "../components/table/page";
 import { useTable } from "../hooks/tablehook";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useChartData } from "../hooks/useChartData";
 import { ChartAreaInteractive } from "../components/area-chart";
 import { useThemeStore } from "../hooks/usetheme.ts";
@@ -69,15 +69,20 @@ export default function CryptoMarketPage() {
     setSelectMarket("");
   }
   console.log(selectCoin, selectMarket);
-  const { data: tableData, loading: tableLoading } = useTable<CryptoRow>({
-    endpoint: "http://localhost:5000/api/market/crypto",
-    params: { symbol: selectCoin, market: selectMarket },
-  });
   const { data: coinHistory, loading } = useChartData(
     "http://localhost:5000/api/crypto/weekly",
     { coin: selectCoin, CUR: selectMarket },
   );
 
+  const cryptoParams = useMemo(
+    () => ({ symbol: selectCoin, market: selectMarket }),
+    [selectCoin, selectMarket],
+  );
+
+  const { data: tableData, loading: tableLoading } = useTable<CryptoRow>({
+    endpoint: "http://localhost:5000/api/market/crypto",
+    params: cryptoParams,
+  });
   const normalizedData: ImportedChartPoint[] = coinHistory
     .filter(
       (d): d is ChartPoint & { price: number } => typeof d.price === "number",

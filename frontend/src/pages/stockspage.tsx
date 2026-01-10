@@ -26,7 +26,7 @@ import { TableDemo } from "../components/table/page";
 import { useTable } from "../hooks/tablehook";
 import { useChartData } from "../hooks/useChartData";
 import { ChartAreaInteractive } from "../components/area-chart";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useWatchlist } from "../hooks/watchlist";
 import { BookmarkIcon } from "lucide-react";
 import { toast, Bounce, ToastContainer } from "react-toastify";
@@ -66,9 +66,11 @@ export default function StocksPage() {
   } else {
     theme = "light";
   }
+  const tableParams = useMemo(() => ({ symbol: selectStock }), [selectStock]);
+
   const { data: tableData, loading: tableLoading } = useTable<stocksRow>({
     endpoint: "http://localhost:5000/api/market/stocks",
-    params: { symbol: selectStock },
+    params: tableParams,
   });
   const { data: stocksHistory, loading } = useChartData(
     "http://localhost:5000/api/market/stockschart",

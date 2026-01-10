@@ -5,7 +5,7 @@ import { ChartAreaInteractive } from "../components/area-chart";
 import { TableDemo } from "../components/table/page";
 import { BarChart3, Users, Rocket } from "lucide-react";
 import { useChartData } from "../hooks/useChartData";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 
 export interface CryptoRow {
@@ -173,9 +173,11 @@ export default function HomePage() {
     { from: "USD", to: "INR" },
   );
   console.log("exchange", exchangeHis);
+  const tableParams = useMemo(() => ({ page: 1, limit: 10 }), []);
+
   const { data: tableData, loading: tableLoading } = useTable<CryptoRow>({
     endpoint: "http://localhost:5000/api/crypto/table",
-    params: { page: 1, limit: 10 },
+    params: tableParams,
   });
 
   const btcnormalizedData: ImportedChartPoint[] = btcHistory

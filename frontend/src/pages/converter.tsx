@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "../components/ui/select";
 import { ArrowLeftRight } from "lucide-react";
+import { API_ENDPOINTS } from "../lib/api";
 import axios from "axios";
 
 type AssetType = "crypto" | "forex" | "stocks";
@@ -29,18 +30,15 @@ export default function ConverterPage() {
   const [amount, setAmount] = useState(1);
   const [convalue, setValue] = useState("");
   async function converter() {
-    const values = await axios.get(
-      "http://localhost:5000/api/service/convert",
-      {
-        params: {
-          from: fromSymbol,
-          to: toSymbol,
-          fromType: fromType,
-          toType: toType,
-          amount: amount,
-        },
+    const values = await axios.get(API_ENDPOINTS.serviceConvert, {
+      params: {
+        from: fromSymbol,
+        to: toSymbol,
+        fromType: fromType,
+        toType: toType,
+        amount: amount,
       },
-    );
+    });
     setValue(values.data.result);
   }
   return (

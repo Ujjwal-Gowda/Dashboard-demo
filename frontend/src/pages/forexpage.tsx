@@ -31,6 +31,7 @@ import {
 import { exportToCSV, exportToJSON } from "../lib/exportutils";
 import { Download } from "lucide-react";
 import { BookmarkIcon } from "lucide-react";
+import { API_ENDPOINTS } from "../lib/api";
 import { useThemeStore } from "../hooks/usetheme";
 export interface ForexRow {
   date: string;
@@ -74,11 +75,11 @@ export default function ForexPage() {
   );
 
   const { data: tableData, loading: tableLoading } = useTable<ForexRow>({
-    endpoint: "http://localhost:5000/api/market/forex",
+    endpoint: API_ENDPOINTS.marketForex,
     params: forexParams,
   });
   const { data: forexHistory, loading } = useChartData(
-    "http://localhost:5000/api/market/weeklyex",
+    API_ENDPOINTS.marketWeeklyEx,
     { from: selectFrom, to: selectTo },
   );
   const normalizedData: ImportedChartPoint[] = forexHistory

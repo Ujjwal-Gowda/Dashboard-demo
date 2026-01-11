@@ -30,6 +30,7 @@ import { useState, useMemo } from "react";
 import { useWatchlist } from "../hooks/watchlist";
 import { BookmarkIcon } from "lucide-react";
 import { toast, Bounce, ToastContainer } from "react-toastify";
+import { API_ENDPOINTS } from "../lib/api";
 import { Toggle } from "../components/ui/toggle";
 import { useThemeStore } from "../hooks/usetheme";
 export interface stocksRow {
@@ -69,11 +70,11 @@ export default function StocksPage() {
   const tableParams = useMemo(() => ({ symbol: selectStock }), [selectStock]);
 
   const { data: tableData, loading: tableLoading } = useTable<stocksRow>({
-    endpoint: "http://localhost:5000/api/market/stocks",
+    endpoint: API_ENDPOINTS.marketStocks,
     params: tableParams,
   });
   const { data: stocksHistory, loading } = useChartData(
-    "http://localhost:5000/api/market/stockschart",
+    API_ENDPOINTS.marketStocksChart,
     { symbol: selectStock },
   );
   const normalizedData: ImportedChartPoint[] = stocksHistory

@@ -8,7 +8,26 @@ import { rediscon } from "./lib/redis";
 import { Request, Response } from "express";
 const app = express();
 
-app.use(cors());
+const allowedOrigins = [
+  "dashboard-demo-phi-two.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:5174",
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  }),
+);
 Connectiondb();
 app.use("/api/crypto", cryptoRoutes);
 app.use("/api/market", marketRoutes);

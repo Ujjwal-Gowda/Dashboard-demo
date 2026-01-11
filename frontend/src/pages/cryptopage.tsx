@@ -20,6 +20,7 @@ import { useState, useMemo } from "react";
 import { useChartData } from "../hooks/useChartData";
 import { ChartAreaInteractive } from "../components/area-chart";
 import { useThemeStore } from "../hooks/usetheme.ts";
+import { API_ENDPOINTS } from "../lib/api.ts";
 import { BookmarkIcon } from "lucide-react";
 import { Toggle } from "../components/ui/toggle";
 
@@ -70,7 +71,7 @@ export default function CryptoMarketPage() {
   }
   console.log(selectCoin, selectMarket);
   const { data: coinHistory, loading } = useChartData(
-    "http://localhost:5000/api/crypto/weekly",
+    API_ENDPOINTS.cryptoWeekly,
     { coin: selectCoin, CUR: selectMarket },
   );
 
@@ -80,7 +81,7 @@ export default function CryptoMarketPage() {
   );
 
   const { data: tableData, loading: tableLoading } = useTable<CryptoRow>({
-    endpoint: "http://localhost:5000/api/market/crypto",
+    endpoint: API_ENDPOINTS.marketCrypto,
     params: cryptoParams,
   });
   const normalizedData: ImportedChartPoint[] = coinHistory

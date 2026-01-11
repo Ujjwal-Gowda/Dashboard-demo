@@ -3,6 +3,7 @@ import { useTable } from "../hooks/tablehook";
 import { Card } from "../components/ui/card";
 import { ChartAreaInteractive } from "../components/area-chart";
 import { TableDemo } from "../components/table/page";
+import { API_ENDPOINTS } from "../lib/api";
 import { BarChart3, Users, Rocket } from "lucide-react";
 import { useChartData } from "../hooks/useChartData";
 import { useEffect, useState, useMemo } from "react";
@@ -36,7 +37,7 @@ function useCryptoPrice(coin: string) {
 
     async function fetchPrice() {
       try {
-        const res = await axios.get("http://localhost:5000/api/crypto/kpi", {
+        const res = await axios.get(API_ENDPOINTS.cryptoKpi, {
           params: { coin, CUR: "USD" },
         });
 
@@ -68,7 +69,7 @@ function useEthereumPrice(coin: string) {
 
     async function fetchPrice() {
       try {
-        const res = await axios.get("http://localhost:5000/api/crypto/finage", {
+        const res = await axios.get(API_ENDPOINTS.cryptoFinage, {
           params: { coin },
         });
 
@@ -101,7 +102,7 @@ function useCurrencyPrice(curr: string) {
 
     async function fetchPrice() {
       try {
-        const res = await axios.get("http://localhost:5000/api/crypto/curr", {
+        const res = await axios.get(API_ENDPOINTS.cryptoCurr, {
           params: { to: curr },
         });
         console.log(res, res.data.cleaned.to);
@@ -134,7 +135,7 @@ function useMarketOpen() {
 
     async function fetchStatus() {
       try {
-        const res = await axios.get("http://localhost:5000/api/market/status");
+        const res = await axios.get(API_ENDPOINTS.marketStatus);
 
         if (mounted) {
           setMarket(res.data.open);
@@ -165,18 +166,18 @@ export default function HomePage() {
   const { marketOp: marketOpen } = useMarketOpen();
 
   const { data: btcHistory, loading } = useChartData(
-    "http://localhost:5000/api/crypto/weekly",
+    API_ENDPOINTS.cryptoWeekly,
     { coin: "BTC", CUR: "EUR" },
   );
-  const { data: exchangeHis } = useChartData(
-    "http://localhost:5000/api/market/weeklyex",
-    { from: "USD", to: "INR" },
-  );
+  const { data: exchangeHis } = useChartData(API_ENDPOINTS.marketWeeklyEx, {
+    from: "USD",
+    to: "INR",
+  });
   console.log("exchange", exchangeHis);
   const tableParams = useMemo(() => ({ page: 1, limit: 10 }), []);
 
   const { data: tableData, loading: tableLoading } = useTable<CryptoRow>({
-    endpoint: "http://localhost:5000/api/crypto/table",
+    endpoint: API_ENDPOINTS.cryptoTable,
     params: tableParams,
   });
 

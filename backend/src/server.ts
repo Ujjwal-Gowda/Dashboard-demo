@@ -9,7 +9,7 @@ import { Request, Response } from "express";
 const app = express();
 
 const allowedOrigins = [
-  "http://dashboard-demo-phi-two.vercel.app",
+  "https://dashboard-demo-phi-two.vercel.app",
   "http://localhost:5173",
   "http://localhost:5174",
 ];

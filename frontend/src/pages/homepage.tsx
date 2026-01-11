@@ -4,7 +4,13 @@ import { Card } from "../components/ui/card";
 import { ChartAreaInteractive } from "../components/area-chart";
 import { TableDemo } from "../components/table/page";
 import { API_ENDPOINTS } from "../lib/api";
-import { BarChart3, Users, Rocket } from "lucide-react";
+import {
+  DoorClosed,
+  DoorOpen,
+  ArrowLeftRight,
+  Bitcoin,
+  Coins,
+} from "lucide-react";
 import { useChartData } from "../hooks/useChartData";
 import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
@@ -206,25 +212,25 @@ export default function HomePage() {
         <KPICard
           title="BTC Price"
           value={btcPrice ? `$${btcPrice}` : "—"}
-          icon={BarChart3}
+          icon={Bitcoin}
         />
 
         <KPICard
           title="ETH Price"
           value={ethPrice ? `$${ethPrice}` : "—"}
-          icon={Users}
+          icon={Coins}
         />
 
         <KPICard
           title="EUR To USD"
           value={"1EUR = " + currencyprice + "USD"}
-          icon={Rocket}
+          icon={ArrowLeftRight}
         />
 
         <KPICard
           title="Market Status"
           value={marketOpen ? "OPEN" : "CLOSED"}
-          icon={Rocket}
+          icon={marketOpen ? DoorOpen : DoorClosed}
         />
       </div>
 
